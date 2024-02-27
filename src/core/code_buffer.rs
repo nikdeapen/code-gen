@@ -1,3 +1,4 @@
+use crate::Statement;
 use std::fmt::{Display, Formatter};
 
 /// Responsible for buffering code.
@@ -97,6 +98,20 @@ impl CodeBuffer {
     /// Clears the buffered code.
     pub fn clear(&mut self) {
         self.code.clear();
+    }
+}
+
+impl CodeBuffer {
+    //! Display
+
+    /// Converts the statement to a string using the default code buffer.
+    pub fn display_statement<S>(statement: &S) -> String
+    where
+        S: Statement,
+    {
+        let mut b: CodeBuffer = CodeBuffer::default();
+        statement.write(&mut b, 0);
+        b.export()
     }
 }
 
