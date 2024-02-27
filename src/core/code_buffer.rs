@@ -1,4 +1,4 @@
-use crate::Statement;
+use crate::{Expression, Statement};
 use std::fmt::{Display, Formatter};
 
 /// Responsible for buffering code.
@@ -103,6 +103,16 @@ impl CodeBuffer {
 
 impl CodeBuffer {
     //! Display
+
+    /// Converts the expression to a string using the default code buffer.
+    pub fn display_expression<E>(expression: &E) -> String
+    where
+        E: Expression,
+    {
+        let mut b: CodeBuffer = CodeBuffer::default();
+        expression.write(&mut b);
+        b.export()
+    }
 
     /// Converts the statement to a string using the default code buffer.
     pub fn display_statement<S>(statement: &S) -> String
