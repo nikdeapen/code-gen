@@ -3,7 +3,8 @@ use crate::{CodeBuffer, Expression, IsEmpty, Statement};
 
 /// A struct impl block.
 pub struct ImplBlock {
-    base: TypeTag,
+    for_trait: Option<TypeTag>,
+    structure: TypeTag,
     comments: Vec<String>,
     functions: Vec<Function>,
 }
@@ -11,16 +12,38 @@ pub struct ImplBlock {
 impl<T: Into<TypeTag>> From<T> for ImplBlock {
     fn from(base: T) -> Self {
         Self {
-            base: base.into(),
+            for_trait: None,
+            structure: base.into(),
             comments: Vec::default(),
             functions: Vec::default(),
         }
     }
 }
 
+impl ImplBlock {
+    //! For Trait
+
+    /// Sets the for trait.
+    pub fn with_for_trait<T>(mut self, for_trait: T) -> Self
+    where
+        T: Into<TypeTag>,
+    {
+        self.set_for_trait(for_trait);
+        self
+    }
+
+    /// Sets the for trait.
+    pub fn set_for_trait<T>(&mut self, for_trait: T)
+    where
+        T: Into<TypeTag>,
+    {
+        self.for_trait = Some(for_trait.into());
+    }
+}
+
 impl WithTypeTag for ImplBlock {
     fn type_tag(&self) -> &TypeTag {
-        &self.base
+        &self.structure
     }
 }
 
@@ -60,7 +83,11 @@ impl Statement for ImplBlock {
     fn write(&self, b: &mut CodeBuffer, level: usize) {
         b.indent(level);
         b.write("impl ");
-        self.base.write(b);
+        if let Some(for_trait) = &self.for_trait {
+            for_trait.write(b);
+            b.write(" for ");
+        }
+        self.structure.write(b);
         b.write(" {");
         if self.is_empty() {
             b.write("}");

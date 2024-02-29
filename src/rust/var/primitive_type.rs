@@ -11,13 +11,13 @@ pub enum PrimitiveType {
     UnsignedInt32,
     UnsignedInt64,
     UnsignedInt128,
-    UnsignedIntArch,
+    UnsignedIntSize,
     SignedInt8,
     SignedInt16,
     SignedInt32,
     SignedInt64,
     SignedInt128,
-    SignedIntArch,
+    SignedIntSize,
     Float32,
     Float64,
     Boolean,
@@ -47,13 +47,13 @@ impl ToStaticStr for PrimitiveType {
             Self::UnsignedInt32 => "u32",
             Self::UnsignedInt64 => "u64",
             Self::UnsignedInt128 => "u128",
-            Self::UnsignedIntArch => "usize",
+            Self::UnsignedIntSize => "usize",
             Self::SignedInt8 => "i8",
             Self::SignedInt16 => "i16",
             Self::SignedInt32 => "i32",
             Self::SignedInt64 => "i64",
             Self::SignedInt128 => "i128",
-            Self::SignedIntArch => "isize",
+            Self::SignedIntSize => "isize",
             Self::Float32 => "f32",
             Self::Float64 => "f64",
             Self::Boolean => "bool",
@@ -87,13 +87,13 @@ mod tests {
         assert_eq!(UnsignedInt32.to_string(), "u32");
         assert_eq!(UnsignedInt64.to_string(), "u64");
         assert_eq!(UnsignedInt128.to_string(), "u128");
-        assert_eq!(UnsignedIntArch.to_string(), "usize");
+        assert_eq!(UnsignedIntSize.to_string(), "usize");
         assert_eq!(SignedInt8.to_string(), "i8");
         assert_eq!(SignedInt16.to_string(), "i16");
         assert_eq!(SignedInt32.to_string(), "i32");
         assert_eq!(SignedInt64.to_string(), "i64");
         assert_eq!(SignedInt128.to_string(), "i128");
-        assert_eq!(SignedIntArch.to_string(), "isize");
+        assert_eq!(SignedIntSize.to_string(), "isize");
         assert_eq!(Float32.to_string(), "f32");
         assert_eq!(Float64.to_string(), "f64");
         assert_eq!(Boolean.to_string(), "bool");
