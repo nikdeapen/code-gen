@@ -1,10 +1,13 @@
-use crate::rust::{Access, CommentType, Signature, WithAccess, WithComments, WithSignature};
+use crate::rust::{
+    Access, CommentType, Signature, WithAccess, WithComments, WithSignature, WithUnsafeFlag,
+};
 use crate::{CodeBuffer, Statement, WithStatements};
 
 /// A function declaration.
 pub struct Function {
     comments: Vec<String>,
     access: Access,
+    is_unsafe: bool,
     signature: Signature,
     statements: Vec<Box<dyn Statement>>,
 }
@@ -14,6 +17,7 @@ impl<S: Into<Signature>> From<S> for Function {
         Self {
             comments: Vec::default(),
             access: Access::default(),
+            is_unsafe: false,
             signature: signature.into(),
             statements: Vec::default(),
         }
@@ -46,6 +50,16 @@ impl WithAccess for Function {
     }
 }
 
+impl WithUnsafeFlag for Function {
+    fn is_unsafe(&self) -> bool {
+        self.is_unsafe
+    }
+
+    fn set_unsafe(&mut self) {
+        self.is_unsafe = true;
+    }
+}
+
 impl WithSignature for Function {
     fn signature(&self) -> &Signature {
         &self.signature
@@ -67,6 +81,9 @@ impl Statement for Function {
         self.write_comments(CommentType::OuterLineDoc, b, level);
         b.indent(level);
         self.write_access(b);
+        if self.is_unsafe {
+            b.write("unsafe ");
+        }
         b.write("fn ");
         self.write_signature(b);
         b.space();
@@ -78,7 +95,7 @@ impl Statement for Function {
 #[cfg(test)]
 mod tests {
     use crate::rust::Access::PublicInCrate;
-    use crate::rust::{Function, WithAccess, WithComments};
+    use crate::rust::{Function, WithAccess, WithComments, WithUnsafeFlag};
     use crate::{CodeBuffer, Literal, WithStatements};
 
     #[test]
@@ -105,6 +122,13 @@ mod tests {
         let function: Function = Function::from("myFn").with_access(PublicInCrate);
         let result: String = CodeBuffer::display_statement(&function);
         assert_eq!(result, "pub(crate) fn myFn() {}\n");
+    }
+
+    #[test]
+    fn write_unsafe() {
+        let function: Function = Function::from("myFn").with_unsafe();
+        let result: String = CodeBuffer::display_statement(&function);
+        assert_eq!(result, "unsafe fn myFn() {}\n");
     }
 
     #[test]
