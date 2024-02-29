@@ -1,4 +1,4 @@
-use crate::{CodeBuffer, Expression, Statement};
+use crate::{CodeBuffer, Expression, Literal, Statement};
 
 /// A semi-colon ended expression statement.
 pub struct Semi<E: Expression> {
@@ -8,6 +8,18 @@ pub struct Semi<E: Expression> {
 impl<E: Expression> From<E> for Semi<E> {
     fn from(expression: E) -> Self {
         Self { expression }
+    }
+}
+
+impl From<&str> for Semi<Literal> {
+    fn from(value: &str) -> Self {
+        Self::from(Literal::from(value))
+    }
+}
+
+impl From<String> for Semi<Literal> {
+    fn from(value: String) -> Self {
+        Self::from(Literal::from(value))
     }
 }
 
