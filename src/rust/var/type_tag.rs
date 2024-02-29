@@ -1,3 +1,4 @@
+use crate::rust::var::reference::Reference;
 use crate::rust::PrimitiveType;
 use crate::rust::TypeTag::*;
 use crate::{CodeBuffer, Expression, ToStaticStr};
@@ -16,6 +17,12 @@ pub enum TypeTag {
 
     /// A generic type.
     Generic((Box<TypeTag>, Vec<TypeTag>)),
+
+    /// A slice.
+    Slice(Box<TypeTag>),
+
+    /// A reference to a type tag.
+    Ref((Reference, Box<TypeTag>)),
 }
 
 impl From<PrimitiveType> for TypeTag {
@@ -57,6 +64,24 @@ impl TypeTag {
     }
 }
 
+impl TypeTag {
+    //! Slice
+
+    /// Converts the type to a slice of itself. `[T]`
+    pub fn to_slice(self) -> Self {
+        Slice(Box::new(self))
+    }
+}
+
+impl TypeTag {
+    //! Reference
+
+    /// Converts the type to a reference type.
+    pub fn to_reference(self, reference: Reference) -> Self {
+        Ref((reference, Box::new(self)))
+    }
+}
+
 impl Expression for TypeTag {
     fn write(&self, b: &mut CodeBuffer) {
         match self {
@@ -75,6 +100,15 @@ impl Expression for TypeTag {
                     b.write(">");
                 }
             }
+            Slice(base) => {
+                b.write("[");
+                base.write(b);
+                b.write("]");
+            }
+            Ref((reference, base)) => {
+                reference.write(b);
+                base.write(b);
+            }
         }
     }
 }
@@ -82,7 +116,7 @@ impl Expression for TypeTag {
 #[cfg(test)]
 mod tests {
     use crate::rust::PrimitiveType::*;
-    use crate::rust::TypeTag;
+    use crate::rust::{Reference, TypeTag};
     use crate::CodeBuffer;
 
     #[test]
@@ -127,5 +161,26 @@ mod tests {
         let tag: TypeTag = tag.to_vec();
         let result: String = CodeBuffer::display_expression(&tag);
         assert_eq!(result, "Vec<Option<MyType>>");
+    }
+
+    #[test]
+    fn write_slice() {
+        let tag: TypeTag = "MyType".into();
+        let tag: TypeTag = tag.to_slice();
+        let result: String = CodeBuffer::display_expression(&tag);
+        assert_eq!(result, "[MyType]");
+    }
+
+    #[test]
+    fn write_reference() {
+        let tag: TypeTag = "MyType".into();
+        let tag: TypeTag = tag.to_reference(Reference::SHARED);
+        let result: String = CodeBuffer::display_expression(&tag);
+        assert_eq!(result, "&MyType");
+
+        let tag: TypeTag = "MyType".into();
+        let tag: TypeTag = tag.to_reference(Reference::MUT_STATIC);
+        let result: String = CodeBuffer::display_expression(&tag);
+        assert_eq!(result, "&'static mut MyType");
     }
 }
