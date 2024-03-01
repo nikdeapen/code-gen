@@ -2,6 +2,7 @@ pub use function::*;
 pub use receiver::*;
 pub use signature::*;
 pub use util::*;
+pub use with_fn_generics::*;
 pub use with_functions::*;
 pub use with_receiver::*;
 pub use with_result::*;
