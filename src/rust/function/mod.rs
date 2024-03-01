@@ -11,6 +11,7 @@ mod function;
 mod receiver;
 mod signature;
 mod util;
+mod with_fn_generics;
 mod with_functions;
 mod with_receiver;
 mod with_result;
