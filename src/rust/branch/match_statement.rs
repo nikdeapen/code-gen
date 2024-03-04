@@ -1,5 +1,5 @@
 use crate::rust::MatchCase;
-use crate::{CodeBuffer, Expression, Statement, WithExpression};
+use crate::{CodeBuffer, Expression, Literal, Statement, WithExpression};
 
 /// A match statement.
 pub struct Match {
@@ -13,6 +13,18 @@ impl<E: 'static + Expression> From<E> for Match {
             expression: Box::new(expression),
             match_cases: Vec::default(),
         }
+    }
+}
+
+impl From<&str> for Match {
+    fn from(value: &str) -> Self {
+        Self::from(Literal::from(value))
+    }
+}
+
+impl From<String> for Match {
+    fn from(value: String) -> Self {
+        Self::from(Literal::from(value))
     }
 }
 
@@ -53,11 +65,28 @@ impl Statement for Match {
         b.indent(level);
         b.write("match ");
         self.expression.write(b);
-        b.write("{");
+        b.write(" {");
         b.end_line();
         for match_case in self.match_cases() {
             match_case.write(b, level + 1);
         }
         b.line(level, "}");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::rust::{Match, MatchCase};
+    use crate::CodeBuffer;
+
+    #[test]
+    fn write() {
+        let match_statement: Match = Match::from("exp");
+        let result: String = CodeBuffer::display_statement(&match_statement);
+        assert_eq!(result, "match exp {\n}\n");
+
+        let match_statement: Match = match_statement.with_match_case(MatchCase::from("Some(1)"));
+        let result: String = CodeBuffer::display_statement(&match_statement);
+        assert_eq!(result, "match exp {\n\tSome(1) => {}\n}\n");
     }
 }
