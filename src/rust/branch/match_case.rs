@@ -29,7 +29,7 @@ impl Statement for MatchCase {
     fn write(&self, b: &mut CodeBuffer, level: usize) {
         b.indent(level);
         b.write(self.case.as_str());
-        b.write(" -> ");
+        b.write(" => ");
         self.write_curly_statement_block(b, level);
         b.end_line();
     }
@@ -44,14 +44,14 @@ mod tests {
     fn write() {
         let match_case: MatchCase = MatchCase::from("Some(1)");
         let result: String = CodeBuffer::display_statement(&match_case);
-        assert_eq!(result, "Some(1) -> {}\n");
+        assert_eq!(result, "Some(1) => {}\n");
 
         let match_case: MatchCase = match_case.with_expression_statement(Literal::from("one"));
         let result: String = CodeBuffer::display_statement(&match_case);
-        assert_eq!(result, "Some(1) -> {\n\tone\n}\n");
+        assert_eq!(result, "Some(1) => {\n\tone\n}\n");
 
         let match_case: MatchCase = match_case.with_expression_statement(Literal::from("two"));
         let result: String = CodeBuffer::display_statement(&match_case);
-        assert_eq!(result, "Some(1) -> {\n\tone\n\ttwo\n}\n");
+        assert_eq!(result, "Some(1) => {\n\tone\n\ttwo\n}\n");
     }
 }
