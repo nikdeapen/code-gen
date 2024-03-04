@@ -29,7 +29,7 @@ impl Statement for MatchCase {
     fn write(&self, b: &mut CodeBuffer, level: usize) {
         b.indent(level);
         b.write(self.case.as_str());
-        b.write(" -> ");
+        b.write(" => ");
         self.write_curly_statement_block(b, level);
         b.end_line();
     }
