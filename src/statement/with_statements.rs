@@ -1,9 +1,39 @@
-use crate::{CodeBuffer, Expression, ExpressionStatement, Statement};
+use crate::{CodeBuffer, Expression, ExpressionStatement, Literal, Semi, Statement};
 
 /// An element with a list of statements.
 pub trait WithStatements: Sized {
     /// Gets the statements.
     fn statements(&self) -> &[Box<dyn Statement>];
+
+    /// Adds the semi-colon ended statement.
+    fn add_literal<L>(&mut self, literal: L)
+    where
+        L: Into<Literal>,
+    {
+        self.add_expression_statement(literal.into());
+    }
+
+    fn with_literal<L>(self, literal: L) -> Self
+    where
+        L: Into<Literal>,
+    {
+        self.with_expression_statement(literal.into())
+    }
+
+    /// Adds the semi-colon ended statement.
+    fn add_semi<L>(&mut self, literal: L)
+    where
+        L: Into<Literal>,
+    {
+        self.add_statement(Semi::from(literal.into()))
+    }
+
+    fn with_semi<L>(self, literal: L) -> Self
+    where
+        L: Into<Literal>,
+    {
+        self.with_statement(Semi::from(literal.into()))
+    }
 
     /// Adds the statement.
     fn with_statement<S>(self, statement: S) -> Self
