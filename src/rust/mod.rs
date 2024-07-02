@@ -1,7 +1,7 @@
 pub use common::*;
 pub use function::*;
-pub use var::*;
 pub use structure::*;
+pub use var::*;
 
 mod common;
 mod function;
