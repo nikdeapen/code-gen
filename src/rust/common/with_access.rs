@@ -8,13 +8,13 @@ pub trait WithAccess: Sized {
 
     /// Sets the access level.
     fn set_access<A>(&mut self, access: A)
-        where
-            A: Into<Access>;
+    where
+        A: Into<Access>;
 
     /// Sets the access level.
     fn with_access<A>(mut self, access: A) -> Self
-        where
-            A: Into<Access>,
+    where
+        A: Into<Access>,
     {
         self.set_access(access);
         self
