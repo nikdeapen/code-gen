@@ -1,3 +1,4 @@
+pub use call::*;
 pub use function::*;
 pub use receiver::*;
 pub use signature::*;
@@ -7,6 +8,7 @@ pub use with_receiver::*;
 pub use with_result::*;
 pub use with_signature::*;
 
+mod call;
 mod function;
 mod receiver;
 mod signature;
