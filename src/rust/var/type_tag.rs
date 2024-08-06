@@ -17,6 +17,9 @@ pub enum TypeTag {
 
     /// A generic type. `(base, generics)`
     Generic(Box<TypeTag>, Vec<TypeTag>),
+
+    /// A slice type.
+    Slice(Box<TypeTag>),
 }
 
 impl From<PrimitiveType> for TypeTag {
@@ -40,6 +43,15 @@ impl TypeTag {
         R: Into<Reference>,
     {
         Ref(reference.into(), Box::new(self))
+    }
+}
+
+impl TypeTag {
+    //! Slice Types
+
+    /// Converts the type to a slice of itself.
+    pub fn to_slice(self) -> Self {
+        Slice(Box::new(self))
     }
 }
 
@@ -91,6 +103,11 @@ impl Expression for TypeTag {
                     }
                     b.write(">");
                 }
+            }
+            Slice(base) => {
+                b.write("[");
+                base.write(b);
+                b.write("]");
             }
         }
     }
