@@ -12,8 +12,11 @@ pub enum TypeTag {
     /// A named type.
     Named(String),
 
-    /// A reference type.
+    /// A reference type. `(reference, base)`
     Ref(Reference, Box<TypeTag>),
+
+    /// A generic type. `(base, generics)`
+    Generic(Box<TypeTag>, Vec<TypeTag>),
 }
 
 impl From<PrimitiveType> for TypeTag {
@@ -40,6 +43,34 @@ impl TypeTag {
     }
 }
 
+impl TypeTag {
+    //! Generics Types
+
+    /// Adds the generic type.
+    pub fn with_generic<T>(self, generic: T) -> Self
+    where
+        T: Into<TypeTag>,
+    {
+        match self {
+            Generic(base, mut generics) => {
+                generics.push(generic.into());
+                Generic(base, generics)
+            }
+            base => Generic(Box::new(base), vec![generic.into()]),
+        }
+    }
+
+    /// Converts the type to an `Option` of itself.
+    pub fn to_option(self) -> Self {
+        Self::from("Option").with_generic(self)
+    }
+
+    /// Converts the type to a `Vec` of itself.
+    pub fn to_vec(self) -> Self {
+        Self::from("Vec").with_generic(self)
+    }
+}
+
 impl Expression for TypeTag {
     fn write(&self, b: &mut CodeBuffer) {
         match self {
@@ -48,6 +79,18 @@ impl Expression for TypeTag {
             Ref(reference, base) => {
                 reference.write(b);
                 base.write(b);
+            }
+            Generic(base, generics) => {
+                base.write(b);
+                if let Some((first, rest)) = generics.split_first() {
+                    b.write("<");
+                    first.write(b);
+                    for generic in rest {
+                        b.write(", ");
+                        generic.write(b);
+                    }
+                    b.write(">");
+                }
             }
         }
     }
