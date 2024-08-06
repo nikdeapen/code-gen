@@ -1,6 +1,6 @@
+pub use common::*;
 pub use function::*;
 pub use var::*;
-pub use common::*;
 
 mod common;
 mod function;
