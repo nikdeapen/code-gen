@@ -1,6 +1,5 @@
-use crate::rust::var::reference::Reference;
-use crate::rust::PrimitiveType;
 use crate::rust::TypeTag::*;
+use crate::rust::{PrimitiveType, Reference};
 use crate::{CodeBuffer, Expression, WithName};
 
 /// A type tag.
