@@ -1,10 +1,13 @@
-use crate::rust::{Access, CommentType, StructField, WithAccess, WithComments, WithStructFields};
+use crate::rust::{
+    Access, CommentType, StructField, WithAccess, WithComments, WithDerives, WithStructFields,
+};
 use crate::{CodeBuffer, Statement, WithName};
 
 /// A struct declaration.
 #[derive(Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug)]
 pub struct Struct {
     comments: Vec<String>,
+    derives: Vec<String>,
     access: Access,
     name: String,
     fields: Vec<StructField>,
@@ -14,6 +17,7 @@ impl<S: Into<String>> From<S> for Struct {
     fn from(name: S) -> Self {
         Self {
             comments: Vec::default(),
+            derives: Vec::default(),
             access: Access::default(),
             name: name.into(),
             fields: Vec::default(),
@@ -31,6 +35,19 @@ impl WithComments for Struct {
         S: Into<String>,
     {
         self.comments.push(comment.into())
+    }
+}
+
+impl WithDerives for Struct {
+    fn derives(&self) -> &[String] {
+        self.derives.as_slice()
+    }
+
+    fn add_derive<S>(&mut self, derive: S)
+    where
+        S: Into<String>,
+    {
+        self.derives.push(derive.into());
     }
 }
 
@@ -69,6 +86,7 @@ impl WithStructFields for Struct {
 impl Statement for Struct {
     fn write(&self, b: &mut CodeBuffer, level: usize) {
         self.write_comments(CommentType::OuterLineDoc, b, level);
+        self.write_derives(b, level);
         b.indent(level);
         self.write_access(b);
         b.write("struct ");
