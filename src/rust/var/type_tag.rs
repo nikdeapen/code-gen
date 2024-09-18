@@ -22,6 +22,12 @@ pub enum TypeTag {
 
     /// The `Self` type.
     SelfType,
+
+    /// A generic type.
+    Generic {
+        base: Box<TypeTag>,
+        generics: Vec<TypeTag>,
+    },
 }
 
 impl From<PrimitiveType> for TypeTag {
@@ -70,6 +76,51 @@ impl TypeTag {
     }
 }
 
+impl TypeTag {
+    //! Generics Types
+
+    /// Adds the generic type.
+    pub fn with_generic<T>(self, generic: T) -> Self
+    where
+        T: Into<TypeTag>,
+    {
+        match self {
+            Generic { base, mut generics } => {
+                generics.push(generic.into());
+                Generic { base, generics }
+            }
+            base => Generic {
+                base: Box::new(base),
+                generics: vec![generic.into()],
+            },
+        }
+    }
+
+    /// Converts the type to an `Option` of itself.
+    pub fn to_option(self) -> Self {
+        Self::from("Option").with_generic(self)
+    }
+
+    /// Converts the type to a `Vec` of itself.
+    pub fn to_vec(self) -> Self {
+        Self::from("Vec").with_generic(self)
+    }
+
+    /// Converts the type to a `Result` of itself with the given `error_type`.
+    pub fn to_result<T>(self, error_type: T) -> Self
+    where
+        T: Into<Self>,
+    {
+        Self::from("Result")
+            .with_generic(self)
+            .with_generic(error_type)
+    }
+
+    /// Converts the type to a `Result` of itself with the `std::io::Error` error type.
+    pub fn to_io_result(self) -> Self {
+        self.to_result(Self::from("std::io::Error"))
+    }
+}
 impl Expression for TypeTag {
     fn write(&self, b: &mut CodeBuffer) {
         match self {
@@ -85,6 +136,18 @@ impl Expression for TypeTag {
             }
             Named(name) => b.write(name.as_str()),
             SelfType => b.write("Self"),
+            Generic { base, generics } => {
+                base.write(b);
+                if let Some((first, rest)) = generics.split_first() {
+                    b.write("<");
+                    first.write(b);
+                    for generic in rest {
+                        b.write(", ");
+                        generic.write(b);
+                    }
+                    b.write(">");
+                }
+            }
         }
     }
 }
