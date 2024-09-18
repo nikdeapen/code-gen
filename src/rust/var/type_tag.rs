@@ -19,6 +19,9 @@ pub enum TypeTag {
 
     /// A named type.
     Named(String),
+
+    /// The `Self` type.
+    SelfType,
 }
 
 impl From<PrimitiveType> for TypeTag {
@@ -81,6 +84,7 @@ impl Expression for TypeTag {
                 b.write("]");
             }
             Named(name) => b.write(name.as_str()),
+            SelfType => b.write("Self"),
         }
     }
 }
