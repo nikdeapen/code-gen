@@ -1,7 +1,7 @@
 pub use if_statement::*;
+pub use loops::*;
 pub use match_case::*;
 pub use match_statement::*;
-pub use loops::*;
 
 mod if_statement;
 mod loops;
