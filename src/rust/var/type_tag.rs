@@ -1,6 +1,6 @@
-use crate::{CodeBuffer, Expression, WithName};
-use crate::rust::{PrimitiveType, Reference};
 use crate::rust::TypeTag::*;
+use crate::rust::{PrimitiveType, Reference};
+use crate::{CodeBuffer, Expression, WithName};
 
 /// A type tag.
 #[derive(Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug)]
@@ -13,6 +13,9 @@ pub enum TypeTag {
         reference: Reference,
         base: Box<TypeTag>,
     },
+
+    /// A slice type.
+    Slice(Box<TypeTag>),
 }
 
 impl From<PrimitiveType> for TypeTag {
@@ -46,6 +49,15 @@ impl TypeTag {
     }
 }
 
+impl TypeTag {
+    //! Slice Types
+
+    /// Converts the type to a slice of itself.
+    pub fn to_slice(self) -> Self {
+        Slice(Box::new(self))
+    }
+}
+
 impl Expression for TypeTag {
     fn write(&self, b: &mut CodeBuffer) {
         match self {
@@ -53,6 +65,11 @@ impl Expression for TypeTag {
             Ref { reference, base } => {
                 reference.write(b);
                 base.write(b);
+            }
+            Slice(base) => {
+                b.write("[");
+                base.write(b);
+                b.write("]");
             }
         }
     }
