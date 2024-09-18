@@ -16,11 +16,20 @@ pub enum TypeTag {
 
     /// A slice type.
     Slice(Box<TypeTag>),
+
+    /// A named type.
+    Named(String),
 }
 
 impl From<PrimitiveType> for TypeTag {
     fn from(primitive: PrimitiveType) -> Self {
         Primitive(primitive)
+    }
+}
+
+impl<S: Into<String>> From<S> for TypeTag {
+    fn from(name: S) -> Self {
+        Named(name.into())
     }
 }
 
@@ -71,6 +80,7 @@ impl Expression for TypeTag {
                 base.write(b);
                 b.write("]");
             }
+            Named(name) => b.write(name.as_str()),
         }
     }
 }
