@@ -1,5 +1,5 @@
-pub use var::*;
 pub use common::*;
+pub use var::*;
 
 mod common;
 mod var;
