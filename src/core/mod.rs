@@ -1,7 +1,7 @@
 pub use code_buffer::*;
+pub use is_empty::*;
 pub use source::*;
 pub use with_name::*;
-pub use is_empty::*;
 
 mod code_buffer;
 mod is_empty;
