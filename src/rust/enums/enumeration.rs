@@ -1,11 +1,12 @@
 use crate::rust::enums::enum_case::EnumCase;
 use crate::rust::CommentType::OuterLineDoc;
-use crate::rust::{Access, WithAccess, WithComments};
+use crate::rust::{Access, WithAccess, WithComments, WithDerives};
 use crate::{CodeBuffer, EmptyLine, Statement, WithName};
 
 /// An enum declaration.
 pub struct Enum {
     comments: Vec<String>,
+    derives: Vec<String>,
     access: Access,
     name: String,
     cases: Vec<EnumCase>,
@@ -15,6 +16,7 @@ impl<S: Into<String>> From<S> for Enum {
     fn from(name: S) -> Self {
         Self {
             comments: Vec::default(),
+            derives: Vec::default(),
             access: Access::default(),
             name: name.into(),
             cases: Vec::default(),
@@ -32,6 +34,19 @@ impl WithComments for Enum {
         S: Into<String>,
     {
         self.comments.push(comment.into());
+    }
+}
+
+impl WithDerives for Enum {
+    fn derives(&self) -> &[String] {
+        self.derives.as_slice()
+    }
+
+    fn add_derive<S>(&mut self, derive: S)
+    where
+        S: Into<String>,
+    {
+        self.derives.push(derive.into());
     }
 }
 
@@ -95,6 +110,7 @@ impl Statement for Enum {
     fn write(&self, b: &mut CodeBuffer, level: usize) {
         self.write_comments(OuterLineDoc, b, level);
         b.indent(level);
+        self.write_derives(b, level);
         self.write_access(b);
         b.write("enum ");
         self.write_name(b);
