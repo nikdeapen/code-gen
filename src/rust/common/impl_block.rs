@@ -1,4 +1,6 @@
-use crate::rust::{CommentType, Function, TypeTag, WithComments, WithFunctions, WithTypeTag};
+use crate::rust::{
+    CommentType, Function, TypeDec, TypeTag, WithComments, WithFunctions, WithTypeDecs, WithTypeTag,
+};
 use crate::{CodeBuffer, EmptyLine, Expression, IsEmpty, Statement};
 
 /// A struct impl block.
@@ -6,6 +8,7 @@ pub struct ImplBlock {
     structure: TypeTag,
     for_trait: Option<TypeTag>,
     comments: Vec<String>,
+    type_decs: Vec<TypeDec>,
     functions: Vec<Function>,
 }
 
@@ -15,6 +18,7 @@ impl<T: Into<TypeTag>> From<T> for ImplBlock {
             structure: base.into(),
             for_trait: None,
             comments: Vec::default(),
+            type_decs: Vec::default(),
             functions: Vec::default(),
         }
     }
@@ -65,6 +69,19 @@ impl WithComments for ImplBlock {
     }
 }
 
+impl WithTypeDecs for ImplBlock {
+    fn type_decs(&self) -> &[TypeDec] {
+        self.type_decs.as_slice()
+    }
+
+    fn add_type_dec<D>(&mut self, type_dec: D)
+    where
+        D: Into<TypeDec>,
+    {
+        self.type_decs.push(type_dec.into());
+    }
+}
+
 impl WithFunctions for ImplBlock {
     fn functions(&self) -> &[Function] {
         self.functions.as_slice()
@@ -80,7 +97,7 @@ impl WithFunctions for ImplBlock {
 
 impl IsEmpty for ImplBlock {
     fn is_empty(&self) -> bool {
-        self.comments.is_empty() && self.functions.is_empty()
+        self.comments.is_empty() && self.functions.is_empty() && self.type_decs().is_empty()
     }
 }
 
@@ -101,7 +118,7 @@ impl Statement for ImplBlock {
             b.end_line();
             self.write_comments(CommentType::InnerLineDoc, b, level + 1);
             EmptyLine::default().write(b, level);
-
+            self.write_type_decs(b, level + 1);
             self.write_functions(b, level + 1);
             b.line(level, "}");
         }

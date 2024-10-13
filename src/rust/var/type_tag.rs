@@ -28,6 +28,9 @@ pub enum TypeTag {
         base: Box<TypeTag>,
         generics: Vec<TypeTag>,
     },
+
+    /// A tuple type.
+    Tuple(Vec<TypeTag>),
 }
 
 impl From<PrimitiveType> for TypeTag {
@@ -147,6 +150,17 @@ impl Expression for TypeTag {
                     }
                     b.write(">");
                 }
+            }
+            Tuple(members) => {
+                b.write("(");
+                if let Some((first, rest)) = members.split_first() {
+                    first.write(b);
+                    for member in rest {
+                        b.write(", ");
+                        member.write(b);
+                    }
+                }
+                b.write(")");
             }
         }
     }
