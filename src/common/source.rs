@@ -6,6 +6,12 @@ pub struct Source {
     statements: Vec<Box<dyn Statement>>,
 }
 
+impl From<Source> for Vec<Box<dyn Statement>> {
+    fn from(source: Source) -> Self {
+        source.statements
+    }
+}
+
 impl WithStatements for Source {
     fn statements(&self) -> &[Box<dyn Statement>] {
         self.statements.as_slice()

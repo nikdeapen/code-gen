@@ -1,4 +1,4 @@
-use crate::{CodeBuffer, Expression, ExpressionStatement, Literal, Semi, Statement};
+use crate::{CodeBuffer, Expression, ExpressionStatement, Literal, Semi, Source, Statement};
 
 /// An element with statements.
 pub trait WithStatements: Sized {
@@ -76,6 +76,27 @@ pub trait WithStatements: Sized {
         E: 'static + Expression,
     {
         self.add_statement(ExpressionStatement::from(expression));
+    }
+
+    /// Adds the source code.
+    fn add_source<S>(&mut self, source: S)
+    where
+        S: Into<Source>,
+    {
+        let source: Source = source.into();
+        let mut source: Vec<Box<dyn Statement>> = source.into();
+        for statement in source.drain(..) {
+            self.add_boxed_statement(statement);
+        }
+    }
+
+    /// Adds the source code.
+    fn with_source<S>(mut self, source: S) -> Self
+    where
+        S: Into<Source>,
+    {
+        self.add_source(source);
+        self
     }
 
     /// Writes the statements.
