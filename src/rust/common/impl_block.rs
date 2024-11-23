@@ -1,18 +1,19 @@
 use crate::rust::{
-    CommentType, Function, TypeDec, TypeTag, WithComments, WithFunctions, WithTypeDecs, WithTypeTag,
+    CommentType, Function, RustType, TypeDec, WithComments, WithFunctions, WithTypeDecs,
+    WithTypeTag,
 };
 use crate::{CodeBuffer, EmptyLine, Expression, IsEmpty, Statement};
 
 /// A struct impl block.
 pub struct ImplBlock {
-    structure: TypeTag,
-    for_trait: Option<TypeTag>,
+    structure: RustType,
+    for_trait: Option<RustType>,
     comments: Vec<String>,
     type_decs: Vec<TypeDec>,
     functions: Vec<Function>,
 }
 
-impl<T: Into<TypeTag>> From<T> for ImplBlock {
+impl<T: Into<RustType>> From<T> for ImplBlock {
     fn from(base: T) -> Self {
         Self {
             structure: base.into(),
@@ -25,7 +26,7 @@ impl<T: Into<TypeTag>> From<T> for ImplBlock {
 }
 
 impl WithTypeTag for ImplBlock {
-    fn type_tag(&self) -> &TypeTag {
+    fn type_tag(&self) -> &RustType {
         &self.structure
     }
 }
@@ -34,14 +35,14 @@ impl ImplBlock {
     //! For Trait
 
     /// Gets the optional `for` trait.
-    pub fn for_trait(&self) -> Option<&TypeTag> {
+    pub fn for_trait(&self) -> Option<&RustType> {
         self.for_trait.as_ref()
     }
 
     /// Sets the `for` trait.
     pub fn set_for_trait<T>(&mut self, for_trait: T)
     where
-        T: Into<TypeTag>,
+        T: Into<RustType>,
     {
         self.for_trait = Some(for_trait.into());
     }
@@ -49,7 +50,7 @@ impl ImplBlock {
     /// Sets the `for` trait.
     pub fn with_for_trait<T>(mut self, for_trait: T) -> Self
     where
-        T: Into<TypeTag>,
+        T: Into<RustType>,
     {
         self.set_for_trait(for_trait);
         self

@@ -1,9 +1,9 @@
-use crate::rust::TypeTag;
+use crate::rust::RustType;
 use crate::{CodeBuffer, Expression, WithName};
 
 /// A primitive type.
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug)]
-pub enum PrimitiveType {
+pub enum RustPrimitive {
     UnsignedInt8,
     UnsignedInt16,
     UnsignedInt32,
@@ -22,7 +22,7 @@ pub enum PrimitiveType {
     Character,
 }
 
-impl WithName for PrimitiveType {
+impl WithName for RustPrimitive {
     fn name(&self) -> &str {
         match self {
             Self::UnsignedInt8 => "u8",
@@ -45,16 +45,16 @@ impl WithName for PrimitiveType {
     }
 }
 
-impl PrimitiveType {
+impl RustPrimitive {
     //! Type Tags
 
     /// Converts the primitive type to a type tag.
-    pub const fn to_type_tag(&self) -> TypeTag {
-        TypeTag::Primitive(*self)
+    pub const fn to_type_tag(&self) -> RustType {
+        RustType::Primitive(*self)
     }
 }
 
-impl Expression for PrimitiveType {
+impl Expression for RustPrimitive {
     fn write(&self, b: &mut CodeBuffer) {
         self.write_name(b);
     }

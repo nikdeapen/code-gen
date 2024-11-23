@@ -1,21 +1,21 @@
-use crate::rust::TypeTag::*;
-use crate::rust::{PrimitiveType, Reference};
+use crate::rust::RustType::*;
+use crate::rust::{Reference, RustPrimitive};
 use crate::{CodeBuffer, Expression, WithName};
 
 /// A type tag.
 #[derive(Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug)]
-pub enum TypeTag {
+pub enum RustType {
     /// A primitive type.
-    Primitive(PrimitiveType),
+    Primitive(RustPrimitive),
 
     /// A reference type.
     Ref {
         reference: Reference,
-        base: Box<TypeTag>,
+        base: Box<RustType>,
     },
 
     /// A slice type.
-    Slice(Box<TypeTag>),
+    Slice(Box<RustType>),
 
     /// A named type.
     Named(String),
@@ -25,27 +25,27 @@ pub enum TypeTag {
 
     /// A generic type.
     Generic {
-        base: Box<TypeTag>,
-        generics: Vec<TypeTag>,
+        base: Box<RustType>,
+        generics: Vec<RustType>,
     },
 
     /// A tuple type.
-    Tuple(Vec<TypeTag>),
+    Tuple(Vec<RustType>),
 }
 
-impl From<PrimitiveType> for TypeTag {
-    fn from(primitive: PrimitiveType) -> Self {
+impl From<RustPrimitive> for RustType {
+    fn from(primitive: RustPrimitive) -> Self {
         Primitive(primitive)
     }
 }
 
-impl<S: Into<String>> From<S> for TypeTag {
+impl<S: Into<String>> From<S> for RustType {
     fn from(name: S) -> Self {
         Named(name.into())
     }
 }
 
-impl TypeTag {
+impl RustType {
     //! Reference Types
 
     /// Converts the type to a reference type.
@@ -70,7 +70,7 @@ impl TypeTag {
     }
 }
 
-impl TypeTag {
+impl RustType {
     //! Slice Types
 
     /// Converts the type to a slice of itself.
@@ -79,13 +79,13 @@ impl TypeTag {
     }
 }
 
-impl TypeTag {
+impl RustType {
     //! Generics Types
 
     /// Adds the generic type.
     pub fn with_generic<T>(self, generic: T) -> Self
     where
-        T: Into<TypeTag>,
+        T: Into<RustType>,
     {
         match self {
             Generic { base, mut generics } => {
@@ -124,7 +124,7 @@ impl TypeTag {
         self.to_result(Self::from("std::io::Error"))
     }
 }
-impl Expression for TypeTag {
+impl Expression for RustType {
     fn write(&self, b: &mut CodeBuffer) {
         match self {
             Primitive(primitive) => b.write(primitive.name()),

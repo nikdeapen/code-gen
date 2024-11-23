@@ -1,14 +1,14 @@
-use crate::rust::{TypeTag, WithTypeTag};
+use crate::rust::{RustType, WithTypeTag};
 use crate::{CodeBuffer, Expression, WithName};
 
 /// A name with an associated type tag.
 #[derive(Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug)]
 pub struct Var {
     name: String,
-    type_tag: TypeTag,
+    type_tag: RustType,
 }
 
-impl<S: Into<String>, T: Into<TypeTag>> From<(S, T)> for Var {
+impl<S: Into<String>, T: Into<RustType>> From<(S, T)> for Var {
     fn from(tuple: (S, T)) -> Self {
         Self {
             name: tuple.0.into(),
@@ -24,7 +24,7 @@ impl WithName for Var {
 }
 
 impl WithTypeTag for Var {
-    fn type_tag(&self) -> &TypeTag {
+    fn type_tag(&self) -> &RustType {
         &self.type_tag
     }
 }

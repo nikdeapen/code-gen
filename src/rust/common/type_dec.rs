@@ -1,5 +1,5 @@
 use crate::rust::CommentType::OuterLineDoc;
-use crate::rust::{Access, TypeTag, Var, WithAccess, WithComments, WithTypeTag, WithVar};
+use crate::rust::{Access, RustType, Var, WithAccess, WithComments, WithTypeTag, WithVar};
 use crate::{CodeBuffer, Statement, WithName};
 
 /// A type declaration.
@@ -53,7 +53,7 @@ impl WithName for TypeDec {
 }
 
 impl WithTypeTag for TypeDec {
-    fn type_tag(&self) -> &TypeTag {
+    fn type_tag(&self) -> &RustType {
         self.var.type_tag()
     }
 }

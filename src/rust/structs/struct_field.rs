@@ -1,4 +1,4 @@
-use crate::rust::{Access, TypeTag, Var, WithAccess, WithTypeTag, WithVar};
+use crate::rust::{Access, RustType, Var, WithAccess, WithTypeTag, WithVar};
 use crate::{CodeBuffer, Statement, WithName};
 
 /// A field of a struct declaration.
@@ -37,7 +37,7 @@ impl WithName for StructField {
 }
 
 impl WithTypeTag for StructField {
-    fn type_tag(&self) -> &TypeTag {
+    fn type_tag(&self) -> &RustType {
         self.var.type_tag()
     }
 }

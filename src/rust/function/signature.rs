@@ -1,5 +1,6 @@
 use crate::rust::{
-    Receiver, TypeTag, Var, WithFnGenerics, WithReceiver, WithResult, WithUnsafeFlag, WithVarParams,
+    Receiver, RustType, Var, WithFnGenerics, WithReceiver, WithResult, WithUnsafeFlag,
+    WithVarParams,
 };
 use crate::{CodeBuffer, Expression, WithName};
 
@@ -11,7 +12,7 @@ pub struct Signature {
     generics: Vec<Var>,
     receiver: Option<Receiver>,
     params: Vec<Var>,
-    result: Option<TypeTag>,
+    result: Option<RustType>,
 }
 
 impl<S: Into<String>> From<S> for Signature {
@@ -80,13 +81,13 @@ impl WithVarParams for Signature {
 }
 
 impl WithResult for Signature {
-    fn result(&self) -> Option<&TypeTag> {
+    fn result(&self) -> Option<&RustType> {
         self.result.as_ref()
     }
 
     fn set_result<T>(&mut self, result: T)
     where
-        T: Into<TypeTag>,
+        T: Into<RustType>,
     {
         self.result = Some(result.into());
     }

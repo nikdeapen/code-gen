@@ -1,11 +1,11 @@
-use crate::rust::{TypeTag, Var};
+use crate::rust::{RustType, Var};
 use crate::{CodeBuffer, Expression};
 
 /// Enum fields.
 pub enum EnumFields {
     Empty,
     Named(Vec<Var>),
-    Unnamed(Vec<TypeTag>),
+    Unnamed(Vec<RustType>),
 }
 
 impl Default for EnumFields {
