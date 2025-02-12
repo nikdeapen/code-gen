@@ -1,5 +1,5 @@
-use crate::{CodeBuffer, Expression};
 use crate::rust::Var;
+use crate::{CodeBuffer, Expression};
 
 /// An element with variable parameters.
 pub trait WithVarParams: Sized {
