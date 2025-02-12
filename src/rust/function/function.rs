@@ -1,5 +1,5 @@
 use crate::rust::CommentType::OuterLineDoc;
-use crate::rust::{Access, Signature, WithAccess, WithComments, WithSignature};
+use crate::rust::{Access, Signature, WithAccess, WithComments, WithSignature, WithUnsafeFlag};
 use crate::{CodeBuffer, Statement, WithStatements};
 
 /// A function declaration.
@@ -68,6 +68,7 @@ impl Statement for Function {
         self.write_comments(OuterLineDoc, b, level);
         b.indent(level);
         self.write_access(b);
+        self.signature.write_unsafe(b);
         b.write("fn ");
         self.write_signature(b);
         b.space();

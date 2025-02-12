@@ -1,11 +1,13 @@
 use crate::rust::{
-    Receiver, RustType, Var, WithFnGenerics, WithReceiver, WithResult, WithVarParams,
+    Receiver, RustType, Var, WithFnGenerics, WithReceiver, WithResult, WithUnsafeFlag,
+    WithVarParams,
 };
 use crate::{CodeBuffer, Expression, WithName};
 
 /// A function signature.
 #[derive(Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug)]
 pub struct Signature {
+    is_unsafe: bool,
     name: String,
     generics: Vec<Var>,
     receiver: Option<Receiver>,
@@ -16,12 +18,23 @@ pub struct Signature {
 impl<S: Into<String>> From<S> for Signature {
     fn from(name: S) -> Self {
         Self {
+            is_unsafe: false,
             name: name.into(),
             generics: Vec::default(),
             receiver: None,
             params: Vec::default(),
             result: None,
         }
+    }
+}
+
+impl WithUnsafeFlag for Signature {
+    fn is_unsafe(&self) -> bool {
+        self.is_unsafe
+    }
+
+    fn set_unsafe(&mut self) {
+        self.is_unsafe = true;
     }
 }
 
