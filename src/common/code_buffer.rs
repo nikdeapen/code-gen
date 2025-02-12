@@ -38,21 +38,6 @@ impl CodeBuffer {
     }
 }
 
-impl CodeBuffer {
-    //! Deconstruction
-
-    /// Exports the buffered code.
-    pub fn export(self) -> String {
-        self.code
-    }
-}
-
-impl From<CodeBuffer> for String {
-    fn from(code_buffer: CodeBuffer) -> Self {
-        code_buffer.export()
-    }
-}
-
 impl Default for CodeBuffer {
     fn default() -> Self {
         Self::new(
@@ -60,6 +45,26 @@ impl Default for CodeBuffer {
             Self::DEFAULT_LINE_ENDING,
             Self::DEFAULT_CAPACITY,
         )
+    }
+}
+
+impl From<CodeBuffer> for String {
+    fn from(buffer: CodeBuffer) -> Self {
+        buffer.code
+    }
+}
+
+impl CodeBuffer {
+    //! Access
+
+    /// Peeks at the buffered code.
+    pub fn peek(&self) -> &str {
+        self.code.as_str()
+    }
+
+    /// Clears the buffered code.
+    pub fn clear(&mut self) {
+        self.code.clear();
     }
 }
 
@@ -92,21 +97,7 @@ impl CodeBuffer {
 
     /// Writes a single space.
     pub fn space(&mut self) {
-        self.code.push_str(" ");
-    }
-}
-
-impl CodeBuffer {
-    //! Access
-
-    /// Peeks at the buffered code.
-    pub fn peek(&self) -> &str {
-        self.code.as_str()
-    }
-
-    /// Clears the buffered code.
-    pub fn clear(&mut self) {
-        self.code.clear();
+        self.code.push(' ');
     }
 }
 

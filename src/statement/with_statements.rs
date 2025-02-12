@@ -1,4 +1,4 @@
-use crate::{CodeBuffer, Expression, ExpressionStatement, Literal, Semi, Source, Statement};
+use crate::{CodeBuffer, Expression, ExpressionStatement, Literal, Semi, Statement};
 
 /// An element with statements.
 pub trait WithStatements: Sized {
@@ -37,12 +37,20 @@ pub trait WithStatements: Sized {
         self.with_statement(Semi::from(literal.into()))
     }
 
-    /// Adds the statement.
-    fn with_statement<S>(self, statement: S) -> Self
+    /// Adds the expression as a statement.
+    fn add_expression_statement<E>(&mut self, expression: E)
     where
-        S: 'static + Statement,
+        E: 'static + Expression,
     {
-        self.with_boxed_statement(Box::new(statement))
+        self.add_statement(ExpressionStatement::from(expression));
+    }
+
+    /// Adds the expression as a statement.
+    fn with_expression_statement<E>(self, expression: E) -> Self
+    where
+        E: 'static + Expression,
+    {
+        self.with_statement(ExpressionStatement::from(expression))
     }
 
     /// Adds the statement.
@@ -53,49 +61,20 @@ pub trait WithStatements: Sized {
         self.add_boxed_statement(Box::new(statement));
     }
 
-    /// Adds the boxed statement.
-    fn with_boxed_statement(mut self, statement: Box<dyn Statement>) -> Self {
-        self.add_boxed_statement(statement);
-        self
+    /// Adds the statement.
+    fn with_statement<S>(self, statement: S) -> Self
+    where
+        S: 'static + Statement,
+    {
+        self.with_boxed_statement(Box::new(statement))
     }
 
     /// Adds the boxed statement.
     fn add_boxed_statement(&mut self, statement: Box<dyn Statement>);
 
-    /// Adds the expression as a statement.
-    fn with_expression_statement<E>(self, expression: E) -> Self
-    where
-        E: 'static + Expression,
-    {
-        self.with_statement(ExpressionStatement::from(expression))
-    }
-
-    /// Adds the expression as a statement.
-    fn add_expression_statement<E>(&mut self, expression: E)
-    where
-        E: 'static + Expression,
-    {
-        self.add_statement(ExpressionStatement::from(expression));
-    }
-
-    /// Adds the source code.
-    fn add_source<S>(&mut self, source: S)
-    where
-        S: Into<Source>,
-    {
-        let source: Source = source.into();
-        let mut source: Vec<Box<dyn Statement>> = source.into();
-        for statement in source.drain(..) {
-            self.add_boxed_statement(statement);
-        }
-    }
-
-    /// Adds the source code.
-    fn with_source<S>(mut self, source: S) -> Self
-    where
-        S: Into<Source>,
-    {
-        self.add_source(source);
+    /// Adds the boxed statement.
+    fn with_boxed_statement(mut self, statement: Box<dyn Statement>) -> Self {
+        self.add_boxed_statement(statement);
         self
     }
 

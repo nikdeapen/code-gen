@@ -1,6 +1,6 @@
 use crate::{CodeBuffer, Statement, WithStatements};
 
-/// Represents generic source code.
+/// Represents general source code.
 #[derive(Default)]
 pub struct Source {
     statements: Vec<Box<dyn Statement>>,
