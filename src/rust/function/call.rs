@@ -25,7 +25,7 @@ impl Call {
         self.base.as_ref()
     }
 
-    /// Sets the base expression.
+    /// Sets the `base` expression.
     pub fn set_base<E>(&mut self, base: E)
     where
         E: 'static + Expression,
@@ -33,21 +33,13 @@ impl Call {
         self.base = Some(Box::new(base));
     }
 
-    /// Sets the base expression.
+    /// Sets the `base` expression.
     pub fn with_base<E>(mut self, base: E) -> Self
     where
         E: 'static + Expression,
     {
         self.set_base(base);
         self
-    }
-
-    /// Writes the base expression.
-    pub fn write_base(&self, b: &mut CodeBuffer) {
-        if let Some(base) = &self.base {
-            base.write(b);
-            b.write(".");
-        }
     }
 }
 
@@ -69,7 +61,10 @@ impl WithParams for Call {
 
 impl Expression for Call {
     fn write(&self, b: &mut CodeBuffer) {
-        self.write_base(b);
+        if let Some(base) = &self.base {
+            base.write(b);
+            b.write(".");
+        }
         self.write_name(b);
         self.write_params_with_parens(b);
     }

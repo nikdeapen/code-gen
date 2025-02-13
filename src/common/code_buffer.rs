@@ -71,12 +71,12 @@ impl CodeBuffer {
 impl CodeBuffer {
     //! Writing
 
-    /// Writes the code.
+    /// Writes the `code`.
     pub fn write(&mut self, code: &str) {
         self.code.push_str(code);
     }
 
-    /// Writes the indent level.
+    /// Writes the indent `level`.
     pub fn indent(&mut self, level: usize) {
         for _ in 0..level {
             self.code.push_str(self.indent.as_mut_str());
@@ -88,7 +88,7 @@ impl CodeBuffer {
         self.code.push_str(self.line_ending.as_str());
     }
 
-    /// Writes a line of code at the indent level with a line-ending.
+    /// Writes a line of `code` at the indent `level` with a line-ending.
     pub fn line(&mut self, level: usize, code: &str) {
         self.indent(level);
         self.write(code);

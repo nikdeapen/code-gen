@@ -39,7 +39,7 @@ impl ImplBlock {
         self.for_trait.as_ref()
     }
 
-    /// Sets the `for` trait.
+    /// Sets the `for_trait`.
     pub fn set_for_trait<T>(&mut self, for_trait: T)
     where
         T: Into<RustType>,
@@ -47,7 +47,7 @@ impl ImplBlock {
         self.for_trait = Some(for_trait.into());
     }
 
-    /// Sets the `for` trait.
+    /// Sets the `for_trait`.
     pub fn with_for_trait<T>(mut self, for_trait: T) -> Self
     where
         T: Into<RustType>,

@@ -6,12 +6,12 @@ pub trait WithTypeDecs: Sized {
     /// Gets the type decs.
     fn type_decs(&self) -> &[TypeDec];
 
-    /// Adds the type dec.
+    /// Adds the `type_dec`.
     fn add_type_dec<D>(&mut self, type_dec: D)
     where
         D: Into<TypeDec>;
 
-    /// Adds the type dec.
+    /// Adds the `type_dec`.
     fn with_type_dec<D>(mut self, type_dec: D) -> Self
     where
         D: Into<TypeDec>,

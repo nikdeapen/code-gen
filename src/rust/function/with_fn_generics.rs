@@ -6,12 +6,12 @@ pub trait WithFnGenerics: Sized {
     /// Gets the generic type parameters.
     fn generics(&self) -> &[Var];
 
-    /// Adds the generic type parameter.
+    /// Adds the `generic` type parameter.
     fn add_generic<V>(&mut self, generic: V)
     where
         V: Into<Var>;
 
-    /// Adds the generic type parameter.
+    /// Adds the `generic` type parameter.
     fn with_generic<V>(mut self, generic: V) -> Self
     where
         V: Into<Var>,

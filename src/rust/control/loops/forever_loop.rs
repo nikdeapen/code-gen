@@ -1,6 +1,6 @@
 use crate::{CodeBuffer, Statement, WithStatements};
 
-/// A `loop` statement.
+/// A forever `loop` statement.
 #[derive(Default)]
 pub struct Loop {
     statements: Vec<Box<dyn Statement>>,

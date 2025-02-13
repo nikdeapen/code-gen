@@ -6,12 +6,12 @@ pub trait WithStructFields: Sized {
     /// Gets the struct fields.
     fn fields(&self) -> &[StructField];
 
-    /// Adds the struct field.
+    /// Adds the struct `field`.
     fn add_field<F>(&mut self, field: F)
     where
         F: Into<StructField>;
 
-    /// Adds the struct field.
+    /// Adds the struct `field`.
     fn with_field<F>(mut self, field: F) -> Self
     where
         F: Into<StructField>,

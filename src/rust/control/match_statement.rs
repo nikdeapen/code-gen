@@ -38,7 +38,7 @@ impl MatchStatement {
         self.assignment.as_ref()
     }
 
-    /// Sets the variable name assignment.
+    /// Sets the variable name `assignment`.
     pub fn set_assignment<V>(&mut self, assignment: V)
     where
         V: Into<Var>,
@@ -46,7 +46,7 @@ impl MatchStatement {
         self.assignment = Some(assignment.into());
     }
 
-    /// Sets the variable name assignment.
+    /// Sets the variable name `assignment`.
     pub fn with_assignment<V>(mut self, assignment: V) -> Self
     where
         V: Into<Var>,
@@ -59,12 +59,12 @@ impl MatchStatement {
 impl MatchStatement {
     //! Cases
 
-    /// Adds the match case.
+    /// Adds the match `case`.
     pub fn add_match_case(&mut self, case: MatchCase) {
         self.match_cases.push(case);
     }
 
-    /// Adds the case.
+    /// Adds the match `case`.
     pub fn with_match_case(mut self, case: MatchCase) -> Self {
         self.add_match_case(case);
         self

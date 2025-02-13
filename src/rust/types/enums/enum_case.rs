@@ -45,7 +45,7 @@ impl EnumCase {
         &self.fields
     }
 
-    /// Sets the fields.
+    /// Sets the `fields`.
     pub fn set_fields<F>(&mut self, fields: F)
     where
         F: Into<EnumFields>,
@@ -53,7 +53,7 @@ impl EnumCase {
         self.fields = fields.into();
     }
 
-    /// Sets the fields.
+    /// Sets the `fields`.
     pub fn with_fields<F>(mut self, fields: F) -> Self
     where
         F: Into<EnumFields>,

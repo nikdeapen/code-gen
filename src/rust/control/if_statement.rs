@@ -37,20 +37,20 @@ impl IfStatement {
         &self.success_statements
     }
 
-    /// Sets the success statements.
-    pub fn set_success_statements<S>(&mut self, success_statements: S)
+    /// Sets the `success` statements.
+    pub fn set_success_statements<S>(&mut self, success: S)
     where
         S: Into<Source>,
     {
-        self.success_statements = success_statements.into();
+        self.success_statements = success.into();
     }
 
-    /// Sets the success statements.
-    pub fn with_success_statements<S>(mut self, success_statements: S) -> Self
+    /// Sets the `success` statements.
+    pub fn with_success_statements<S>(mut self, success: S) -> Self
     where
         S: Into<Source>,
     {
-        self.set_success_statements(success_statements);
+        self.set_success_statements(success);
         self
     }
 }
@@ -63,7 +63,7 @@ impl IfStatement {
         &self.else_statements
     }
 
-    /// Sets the else statements.
+    /// Sets the `else_statements`.
     pub fn set_else_statements<S>(&mut self, else_statements: S)
     where
         S: Into<Source>,
@@ -71,7 +71,7 @@ impl IfStatement {
         self.else_statements = else_statements.into();
     }
 
-    /// Sets the else statements.
+    /// Sets the `else_statements`.
     pub fn with_else_statements<S>(mut self, else_statements: S) -> Self
     where
         S: Into<Source>,
