@@ -1,9 +1,10 @@
-use crate::rust::{CommentType, Var, WithComments, WithVar};
 use crate::{CodeBuffer, Expression, Statement};
+use crate::rust::{Access, CommentType, Var, WithAccess, WithComments, WithVar};
 
 /// A const initialization statement.
 pub struct ConstInit {
     comments: Vec<String>,
+    access: Access,
     var: Var,
     expression: Box<dyn Expression>,
 }
@@ -12,15 +13,10 @@ impl<V: Into<Var>, E: 'static + Expression> From<(V, E)> for ConstInit {
     fn from(t: (V, E)) -> Self {
         Self {
             comments: Vec::default(),
+            access: Access::default(),
             var: t.0.into(),
             expression: Box::new(t.1),
         }
-    }
-}
-
-impl WithVar for ConstInit {
-    fn var(&self) -> &Var {
-        &self.var
     }
 }
 
@@ -34,6 +30,25 @@ impl WithComments for ConstInit {
         S: Into<String>,
     {
         self.comments.push(comment.into());
+    }
+}
+
+impl WithAccess for ConstInit {
+    fn access(&self) -> &Access {
+        &self.access
+    }
+
+    fn set_access<A>(&mut self, access: A)
+    where
+        A: Into<Access>,
+    {
+        self.access = access.into();
+    }
+}
+
+impl WithVar for ConstInit {
+    fn var(&self) -> &Var {
+        &self.var
     }
 }
 
