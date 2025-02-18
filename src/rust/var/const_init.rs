@@ -1,5 +1,5 @@
-use crate::{CodeBuffer, Expression, Statement};
 use crate::rust::{Access, CommentType, Var, WithAccess, WithComments, WithVar};
+use crate::{CodeBuffer, Expression, Statement};
 
 /// A const initialization statement.
 pub struct ConstInit {
