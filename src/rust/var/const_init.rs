@@ -56,6 +56,7 @@ impl Statement for ConstInit {
     fn write(&self, b: &mut CodeBuffer, level: usize) {
         self.write_comments(CommentType::OuterLineDoc, b, level);
         b.indent(level);
+        self.write_access(b);
         b.write("const ");
         self.write_var(b);
         b.write(" = ");
