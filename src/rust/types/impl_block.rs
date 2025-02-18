@@ -1,5 +1,5 @@
 use crate::rust::{
-    CommentType, Function, RustType, TypeDec, WithComments, WithFunctions, WithRustType,
+    CommentType, ConstInit, Function, RustType, TypeDec, WithComments, WithFunctions, WithRustType,
     WithTypeDecs,
 };
 use crate::{CodeBuffer, EmptyLine, Expression, IsEmpty, Statement};
@@ -10,6 +10,7 @@ pub struct ImplBlock {
     for_trait: Option<RustType>,
     comments: Vec<String>,
     type_decs: Vec<TypeDec>,
+    constants: Vec<ConstInit>,
     functions: Vec<Function>,
 }
 
@@ -20,6 +21,7 @@ impl<T: Into<RustType>> From<T> for ImplBlock {
             for_trait: None,
             comments: Vec::default(),
             type_decs: Vec::default(),
+            constants: Vec::default(),
             functions: Vec::default(),
         }
     }
@@ -83,6 +85,34 @@ impl WithTypeDecs for ImplBlock {
     }
 }
 
+impl ImplBlock {
+    //! Constants
+
+    /// Gets the constants.
+    pub fn constants(&self) -> &[ConstInit] {
+        self.constants.as_slice()
+    }
+
+    /// Adds the constant.
+    pub fn add_constant(&mut self, constant: ConstInit) {
+        self.constants.push(constant);
+    }
+
+    /// Adds the constant.
+    pub fn with_constant(mut self, constant: ConstInit) -> Self {
+        self.add_constant(constant);
+        self
+    }
+
+    /// Adds the constant.
+    pub fn write_constants(&self, b: &mut CodeBuffer, level: usize) {
+        for constant in self.constants() {
+            EmptyLine::default().write(b, level);
+            constant.write(b, level);
+        }
+    }
+}
+
 impl WithFunctions for ImplBlock {
     fn functions(&self) -> &[Function] {
         self.functions.as_slice()
@@ -98,7 +128,10 @@ impl WithFunctions for ImplBlock {
 
 impl IsEmpty for ImplBlock {
     fn is_empty(&self) -> bool {
-        self.comments.is_empty() && self.functions.is_empty() && self.type_decs().is_empty()
+        self.comments.is_empty()
+            && self.type_decs().is_empty()
+            && self.constants.is_empty()
+            && self.functions.is_empty()
     }
 }
 
@@ -120,6 +153,7 @@ impl Statement for ImplBlock {
             self.write_comments(CommentType::InnerLineDoc, b, level + 1);
             EmptyLine::default().write(b, level);
             self.write_type_decs(b, level + 1);
+            self.write_constants(b, level + 1);
             self.write_functions(b, level + 1);
             b.line(level, "}");
         }
