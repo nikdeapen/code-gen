@@ -1,0 +1,10 @@
+[package]
+name = "code-gen"
+version = "0.0.0"
+description = "This library aids in code generation."
+readme = "README.md"
+repository = "https://github.com/nikdeapen/code-gen"
+homepage = "https://github.com/nikdeapen/code-gen"
+authors = ["Nik Deapen <nik@deapen.com>"]
+edition = "2021"
+license = "MIT"
