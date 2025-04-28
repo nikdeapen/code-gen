@@ -1,8 +1,8 @@
 pub use common::*;
 pub use control::*;
+pub use exp::*;
 pub use function::*;
 pub use var::*;
-pub use exp::*;
 
 mod common;
 mod control;
