@@ -1,17 +1,23 @@
 pub use call::*;
+pub use function::*;
 pub use receiver::*;
 pub use signature::*;
+pub use signature_dec::*;
 pub use with_fn_generics::*;
 pub use with_functions::*;
 pub use with_receiver::*;
 pub use with_result::*;
 pub use with_signature::*;
+pub use with_signature_decs::*;
 
 mod call;
+mod function;
 mod receiver;
 mod signature;
+mod signature_dec;
 mod with_fn_generics;
 mod with_functions;
 mod with_receiver;
 mod with_result;
 mod with_signature;
+mod with_signature_decs;
