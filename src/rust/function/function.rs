@@ -8,6 +8,7 @@ use crate::{CodeBuffer, Statement, WithStatements};
 pub struct Function {
     comments: Vec<String>,
     attributes: Vec<String>,
+    is_async: bool,
     access: Access,
     signature: Signature,
     statements: Vec<Box<dyn Statement>>,
@@ -18,6 +19,7 @@ impl<S: Into<Signature>> From<S> for Function {
         Self {
             comments: Vec::default(),
             attributes: Vec::default(),
+            is_async: false,
             access: Access::default(),
             signature: signature.into(),
             statements: Vec::default(),
@@ -64,6 +66,21 @@ impl WithAccess for Function {
     }
 }
 
+impl Function {
+    //! Async
+
+    /// Sets the `is_async` flag.
+    pub fn set_async(&mut self, is_async: bool) {
+        self.is_async = is_async;
+    }
+
+    /// Sets the `is_async` flag.
+    pub fn with_async(mut self, is_async: bool) -> Self {
+        self.set_async(is_async);
+        self
+    }
+}
+
 impl WithSignature for Function {
     fn signature(&self) -> &Signature {
         &self.signature
@@ -86,6 +103,9 @@ impl Statement for Function {
         self.write_attributes(b, level);
         b.indent(level);
         self.write_access(b);
+        if self.is_async {
+            b.write(" async");
+        }
         self.signature.write_unsafe(b);
         b.write("fn ");
         self.write_signature(b);
