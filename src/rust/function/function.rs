@@ -1,10 +1,13 @@
 use crate::rust::CommentType::OuterLineDoc;
-use crate::rust::{Access, Signature, WithAccess, WithComments, WithSignature, WithUnsafeFlag};
+use crate::rust::{
+    Access, Signature, WithAccess, WithAttributes, WithComments, WithSignature, WithUnsafeFlag,
+};
 use crate::{CodeBuffer, Statement, WithStatements};
 
 /// A function declaration.
 pub struct Function {
     comments: Vec<String>,
+    attributes: Vec<String>,
     access: Access,
     signature: Signature,
     statements: Vec<Box<dyn Statement>>,
@@ -14,6 +17,7 @@ impl<S: Into<Signature>> From<S> for Function {
     fn from(signature: S) -> Self {
         Self {
             comments: Vec::default(),
+            attributes: Vec::default(),
             access: Access::default(),
             signature: signature.into(),
             statements: Vec::default(),
@@ -31,6 +35,19 @@ impl WithComments for Function {
         S: Into<String>,
     {
         self.comments.push(comment.into());
+    }
+}
+
+impl WithAttributes for Function {
+    fn attributes(&self) -> &[String] {
+        self.attributes.as_slice()
+    }
+
+    fn add_attribute<S>(&mut self, attribute: S)
+    where
+        S: Into<String>,
+    {
+        self.attributes.push(attribute.into());
     }
 }
 
@@ -66,6 +83,7 @@ impl WithStatements for Function {
 impl Statement for Function {
     fn write(&self, b: &mut CodeBuffer, level: usize) {
         self.write_comments(OuterLineDoc, b, level);
+        self.write_attributes(b, level);
         b.indent(level);
         self.write_access(b);
         self.signature.write_unsafe(b);

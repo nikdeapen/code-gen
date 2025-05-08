@@ -3,6 +3,7 @@ pub use impl_block::*;
 pub use structs::*;
 pub use traits::*;
 pub use type_dec::*;
+pub use with_attributes::*;
 pub use with_derives::*;
 pub use with_type_decs::*;
 
@@ -11,5 +12,6 @@ mod impl_block;
 mod structs;
 mod traits;
 mod type_dec;
+mod with_attributes;
 mod with_derives;
 mod with_type_decs;

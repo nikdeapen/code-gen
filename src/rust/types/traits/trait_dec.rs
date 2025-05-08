@@ -1,12 +1,14 @@
 use crate::rust::CommentType::OuterLineDoc;
 use crate::rust::{
-    Access, Function, SignatureDec, WithAccess, WithComments, WithFunctions, WithTraitFunctions,
+    Access, Function, SignatureDec, WithAccess, WithAttributes, WithComments, WithFunctions,
+    WithTraitFunctions,
 };
 use crate::{CodeBuffer, IsEmpty, Statement, WithName};
 
 /// A trait declaration.
 pub struct Trait {
     comments: Vec<String>,
+    attributes: Vec<String>,
     access: Access,
     name: String,
     trait_functions: Vec<SignatureDec>,
@@ -17,6 +19,7 @@ impl<S: Into<String>> From<S> for Trait {
     fn from(name: S) -> Self {
         Self {
             comments: Vec::default(),
+            attributes: Vec::default(),
             access: Access::default(),
             name: name.into(),
             trait_functions: Vec::default(),
@@ -35,6 +38,19 @@ impl WithComments for Trait {
         S: Into<String>,
     {
         self.comments.push(comment.into())
+    }
+}
+
+impl WithAttributes for Trait {
+    fn attributes(&self) -> &[String] {
+        self.attributes.as_slice()
+    }
+
+    fn add_attribute<S>(&mut self, attribute: S)
+    where
+        S: Into<String>,
+    {
+        self.attributes.push(attribute.into())
     }
 }
 
@@ -92,6 +108,7 @@ impl IsEmpty for Trait {
 impl Statement for Trait {
     fn write(&self, b: &mut CodeBuffer, level: usize) {
         self.write_comments(OuterLineDoc, b, level);
+        self.write_attributes(b, level);
         b.indent(level);
         self.write_access(b);
         b.write("trait ");
