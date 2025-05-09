@@ -1,5 +1,6 @@
 use crate::rust::{
-    Access, CommentType, StructField, WithAccess, WithComments, WithDerives, WithStructFields,
+    Access, CommentType, StructField, Var, WithAccess, WithComments, WithDerives, WithGenerics,
+    WithStructFields,
 };
 use crate::{CodeBuffer, Statement, WithName};
 
@@ -10,6 +11,7 @@ pub struct Struct {
     derives: Vec<String>,
     access: Access,
     name: String,
+    generics: Vec<Var>,
     fields: Vec<StructField>,
 }
 
@@ -20,6 +22,7 @@ impl<S: Into<String>> From<S> for Struct {
             derives: Vec::default(),
             access: Access::default(),
             name: name.into(),
+            generics: Vec::default(),
             fields: Vec::default(),
         }
     }
@@ -70,6 +73,19 @@ impl WithName for Struct {
     }
 }
 
+impl WithGenerics for Struct {
+    fn generics(&self) -> &[Var] {
+        self.generics.as_slice()
+    }
+
+    fn add_generic<V>(&mut self, generic: V)
+    where
+        V: Into<Var>,
+    {
+        self.generics.push(generic.into())
+    }
+}
+
 impl WithStructFields for Struct {
     fn fields(&self) -> &[StructField] {
         self.fields.as_slice()
@@ -91,6 +107,7 @@ impl Statement for Struct {
         self.write_access(b);
         b.write("struct ");
         self.write_name(b);
+        self.write_generic_brackets(b);
         b.write(" {");
         if self.fields.is_empty() {
             b.write("}");
