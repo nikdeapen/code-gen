@@ -1,6 +1,7 @@
 use crate::rust::RustType::*;
 use crate::rust::{Reference, RustPrimitive};
 use crate::{CodeBuffer, Expression, WithName};
+use std::fmt::{Display, Formatter};
 
 /// A Rust type.
 #[derive(Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug)]
@@ -135,5 +136,13 @@ impl Expression for RustType {
                 }
             }
         }
+    }
+}
+
+impl Display for RustType {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let mut b: CodeBuffer = CodeBuffer::new("", "", 64);
+        self.write(&mut b);
+        write!(f, "{}", b)
     }
 }

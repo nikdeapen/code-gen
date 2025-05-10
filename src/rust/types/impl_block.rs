@@ -1,11 +1,12 @@
 use crate::rust::{
-    CommentType, ConstInit, Function, RustType, TypeDec, WithComments, WithFunctions, WithRustType,
-    WithTypeDecs,
+    CommentType, ConstInit, Function, RustType, TypeDec, Var, WithComments, WithFunctions,
+    WithGenerics, WithRustType, WithTypeDecs,
 };
 use crate::{CodeBuffer, EmptyLine, Expression, IsEmpty, Statement};
 
 /// An impl block.
 pub struct ImplBlock {
+    generics: Vec<Var>,
     structure: RustType,
     for_trait: Option<RustType>,
     comments: Vec<String>,
@@ -17,6 +18,7 @@ pub struct ImplBlock {
 impl<T: Into<RustType>> From<T> for ImplBlock {
     fn from(base: T) -> Self {
         Self {
+            generics: Vec::default(),
             structure: base.into(),
             for_trait: None,
             comments: Vec::default(),
@@ -24,6 +26,19 @@ impl<T: Into<RustType>> From<T> for ImplBlock {
             constants: Vec::default(),
             functions: Vec::default(),
         }
+    }
+}
+
+impl WithGenerics for ImplBlock {
+    fn generics(&self) -> &[Var] {
+        self.generics.as_slice()
+    }
+
+    fn add_generic<V>(&mut self, generic: V)
+    where
+        V: Into<Var>,
+    {
+        self.generics.push(generic.into());
     }
 }
 
@@ -138,7 +153,9 @@ impl IsEmpty for ImplBlock {
 impl Statement for ImplBlock {
     fn write(&self, b: &mut CodeBuffer, level: usize) {
         b.indent(level);
-        b.write("impl ");
+        b.write("impl");
+        self.write_generic_brackets(b);
+        b.space();
         if let Some(for_trait) = self.for_trait() {
             for_trait.write(b);
             b.write(" for ");

@@ -3,6 +3,7 @@ use crate::{CodeBuffer, Expression, WithName, WithParams};
 /// A function call.
 pub struct Call {
     base: Option<Box<dyn Expression>>,
+    is_static: bool,
     fn_name: String,
     params: Vec<Box<dyn Expression>>,
 }
@@ -11,6 +12,7 @@ impl<S: Into<String>> From<S> for Call {
     fn from(fn_name: S) -> Self {
         Self {
             base: None,
+            is_static: false,
             fn_name: fn_name.into(),
             params: vec![],
         }
@@ -43,6 +45,21 @@ impl Call {
     }
 }
 
+impl Call {
+    //! Static
+
+    /// Sets the `is_static` flag.
+    pub fn set_static(&mut self) {
+        self.is_static = true;
+    }
+
+    /// Sets the `is_static` flag.
+    pub fn with_static(mut self) -> Self {
+        self.set_static();
+        self
+    }
+}
+
 impl WithName for Call {
     fn name(&self) -> &str {
         self.fn_name.as_str()
@@ -63,7 +80,11 @@ impl Expression for Call {
     fn write(&self, b: &mut CodeBuffer) {
         if let Some(base) = &self.base {
             base.write(b);
-            b.write(".");
+            if self.is_static {
+                b.write("::");
+            } else {
+                b.write(".");
+            }
         }
         self.write_name(b);
         self.write_params_with_parens(b);

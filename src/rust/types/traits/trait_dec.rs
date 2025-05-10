@@ -120,9 +120,11 @@ impl Statement for Trait {
         } else {
             b.end_line();
             for function in self.signature_decs() {
+                b.end_line();
                 function.write(b, level + 1);
             }
             for function in self.functions() {
+                b.end_line();
                 function.write(b, level + 1);
             }
             b.line(level, "}");
