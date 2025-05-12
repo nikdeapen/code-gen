@@ -23,8 +23,8 @@ impl Call {
     //! Base Expression
 
     /// Gets the base expression.
-    pub fn base(&self) -> Option<&Box<dyn Expression>> {
-        self.base.as_ref()
+    pub fn base(&self) -> Option<&dyn Expression> {
+        self.base.as_deref()
     }
 
     /// Sets the `base` expression.
