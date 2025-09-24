@@ -9,6 +9,7 @@ pub struct Function {
     comments: Vec<String>,
     attributes: Vec<String>,
     is_async: bool,
+    is_const: bool,
     access: Access,
     signature: Signature,
     statements: Vec<Box<dyn Statement>>,
@@ -20,6 +21,7 @@ impl<S: Into<Signature>> From<S> for Function {
             comments: Vec::default(),
             attributes: Vec::default(),
             is_async: false,
+            is_const: false,
             access: Access::default(),
             signature: signature.into(),
             statements: Vec::default(),
@@ -81,6 +83,21 @@ impl Function {
     }
 }
 
+impl Function {
+    //! Const
+
+    /// Sets the `is_const` flag.
+    pub fn set_const(&mut self, is_const: bool) {
+        self.is_const = is_const;
+    }
+
+    /// Sets the `is_const` flag.
+    pub fn with_const(mut self, is_const: bool) -> Self {
+        self.set_const(is_const);
+        self
+    }
+}
+
 impl WithSignature for Function {
     fn signature(&self) -> &Signature {
         &self.signature
@@ -105,6 +122,9 @@ impl Statement for Function {
         self.write_access(b);
         if self.is_async {
             b.write(" async");
+        }
+        if self.is_const {
+            b.write(" const");
         }
         self.signature.write_unsafe(b);
         b.write("fn ");
