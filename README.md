@@ -4,7 +4,7 @@ This library aids in code generation.
 
 ## Dependencies & Features
 
-    code-gen = "0.7.0"
+    code-gen = "0.7.1"
 
 ## Features
 
