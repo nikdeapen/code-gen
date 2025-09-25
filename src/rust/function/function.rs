@@ -121,10 +121,10 @@ impl Statement for Function {
         b.indent(level);
         self.write_access(b);
         if self.is_async {
-            b.write(" async");
+            b.write("async ");
         }
         if self.is_const {
-            b.write(" const");
+            b.write("const ");
         }
         self.signature.write_unsafe(b);
         b.write("fn ");
