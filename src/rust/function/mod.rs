@@ -1,6 +1,7 @@
 pub use function::*;
 pub use receiver::*;
 pub use signature::*;
+pub use signature_dec::*;
 pub use with_fn_generics::*;
 pub use with_functions::*;
 pub use with_receiver::*;
@@ -10,6 +11,7 @@ pub use with_signature::*;
 mod function;
 mod receiver;
 mod signature;
+mod signature_dec;
 mod with_fn_generics;
 mod with_functions;
 mod with_receiver;
