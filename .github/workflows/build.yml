@@ -5,7 +5,7 @@ env:
   CARGO_TERM_COLOR: always
 jobs:
   build:
-    name: Build
+    name: Build # todo -- feature matrix
     runs-on: ubuntu-latest
     steps:
       - name: Git Checkout
