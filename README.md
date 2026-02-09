@@ -4,7 +4,7 @@ This library aids in code generation.
 
 ## Dependencies & Features
 
-    code-gen = "0.9.0-rc.3"
+    code-gen = "0.9.0"
 
 This crate has no dependencies.
 
