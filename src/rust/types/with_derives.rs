@@ -1,5 +1,6 @@
 use crate::CodeBuffer;
 
+/// An element with derive macros.
 pub trait WithDerives: Sized {
     /// Gets the derives.
     fn derives(&self) -> &[String];

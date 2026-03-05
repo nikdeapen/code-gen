@@ -136,3 +136,61 @@ impl Statement for Function {
         b.end_line();
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::WithStatements;
+    use crate::rust::{Receiver, RustType, WithReceiver, WithResult};
+
+    #[test]
+    fn empty_function() {
+        let f = Function::from("foo");
+        assert_eq!(f.to_code(), "fn foo() {}\n");
+    }
+
+    #[test]
+    fn public_function() {
+        let f = Function::from("foo").with_access(Access::Public);
+        assert_eq!(f.to_code(), "pub fn foo() {}\n");
+    }
+
+    #[test]
+    fn function_with_body() {
+        let f = Function::from(
+            Signature::from("greet")
+                .with_receiver(Receiver::Borrowed)
+                .with_result(RustType::from("String")),
+        )
+        .with_access(Access::Public)
+        .with_semi("self.name.clone()");
+        assert_eq!(
+            f.to_code(),
+            "pub fn greet(&self) -> String {\n    self.name.clone();\n}\n"
+        );
+    }
+
+    #[test]
+    fn async_function() {
+        let f = Function::from("fetch").with_async(true);
+        assert_eq!(f.to_code(), "async fn fetch() {}\n");
+    }
+
+    #[test]
+    fn const_function() {
+        let f = Function::from("new").with_const(true);
+        assert_eq!(f.to_code(), "const fn new() {}\n");
+    }
+
+    #[test]
+    fn function_with_comment() {
+        let f = Function::from("foo").with_comment("Does foo.");
+        assert_eq!(f.to_code(), "///Does foo.\nfn foo() {}\n");
+    }
+
+    #[test]
+    fn function_with_attribute() {
+        let f = Function::from("test_it").with_attribute("test");
+        assert_eq!(f.to_code(), "#[test]\nfn test_it() {}\n");
+    }
+}

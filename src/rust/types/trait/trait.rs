@@ -11,7 +11,7 @@ pub struct Trait {
     attributes: Vec<String>,
     access: Access,
     name: String,
-    trait_functions: Vec<SignatureDec>,
+    signature_decs: Vec<SignatureDec>,
     functions: Vec<Function>,
 }
 
@@ -22,7 +22,7 @@ impl<S: Into<String>> From<S> for Trait {
             attributes: Vec::default(),
             access: Access::default(),
             name: name.into(),
-            trait_functions: Vec::default(),
+            signature_decs: Vec::default(),
             functions: Vec::default(),
         }
     }
@@ -37,7 +37,7 @@ impl WithComments for Trait {
     where
         S: Into<String>,
     {
-        self.comments.push(comment.into())
+        self.comments.push(comment.into());
     }
 }
 
@@ -50,7 +50,7 @@ impl WithAttributes for Trait {
     where
         S: Into<String>,
     {
-        self.attributes.push(attribute.into())
+        self.attributes.push(attribute.into());
     }
 }
 
@@ -75,14 +75,14 @@ impl WithName for Trait {
 
 impl WithTraitFunctions for Trait {
     fn signature_decs(&self) -> &[SignatureDec] {
-        self.trait_functions.as_slice()
+        self.signature_decs.as_slice()
     }
 
     fn add_signature_dec<F>(&mut self, function: F)
     where
         F: Into<SignatureDec>,
     {
-        self.trait_functions.push(function.into());
+        self.signature_decs.push(function.into());
     }
 }
 
@@ -95,13 +95,13 @@ impl WithFunctions for Trait {
     where
         F: Into<Function>,
     {
-        self.functions.push(function.into())
+        self.functions.push(function.into());
     }
 }
 
 impl IsEmpty for Trait {
     fn is_empty(&self) -> bool {
-        self.functions.is_empty() && self.trait_functions.is_empty()
+        self.functions.is_empty() && self.signature_decs.is_empty()
     }
 }
 
@@ -129,5 +129,49 @@ impl Statement for Trait {
             }
             b.line(level, "}");
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::WithStatements;
+    use crate::rust::{Receiver, RustType, Signature, WithReceiver, WithResult};
+
+    #[test]
+    fn empty_trait() {
+        let t = Trait::from("Foo");
+        assert_eq!(t.to_code(), "trait Foo {}\n");
+    }
+
+    #[test]
+    fn trait_with_signature_dec() {
+        let t = Trait::from("Greet")
+            .with_access(Access::Public)
+            .with_signature_dec(SignatureDec::from(
+                Signature::from("greet")
+                    .with_receiver(Receiver::Borrowed)
+                    .with_result(RustType::from("String")),
+            ));
+        assert_eq!(
+            t.to_code(),
+            "pub trait Greet {\n\n    fn greet(&self) -> String;\n}\n"
+        );
+    }
+
+    #[test]
+    fn trait_with_function() {
+        let t = Trait::from("HasName").with_function(
+            Function::from(
+                Signature::from("name")
+                    .with_receiver(Receiver::Borrowed)
+                    .with_result(RustType::from("str").to_ref(crate::rust::Reference::default())),
+            )
+            .with_semi("\"unnamed\""),
+        );
+        assert_eq!(
+            t.to_code(),
+            "trait HasName {\n\n    fn name(&self) -> &str {\n        \"unnamed\";\n    }\n}\n"
+        );
     }
 }

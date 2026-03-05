@@ -63,7 +63,7 @@ impl WithReceiver for Signature {
     }
 
     fn set_receiver(&mut self, receiver: Receiver) {
-        self.receiver = Some(receiver)
+        self.receiver = Some(receiver);
     }
 }
 
@@ -108,5 +108,46 @@ impl Expression for Signature {
         b.push(')');
         self.write_result(b);
         self.write_generic_where(b);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::rust::{WithReceiver, WithResult, WithVarParams};
+
+    #[test]
+    fn simple_signature() {
+        let s = Signature::from("foo");
+        assert_eq!(s.to_code(), "foo()");
+    }
+
+    #[test]
+    fn signature_with_receiver() {
+        let s = Signature::from("foo").with_receiver(Receiver::Borrowed);
+        assert_eq!(s.to_code(), "foo(&self)");
+    }
+
+    #[test]
+    fn signature_with_params() {
+        let s = Signature::from("foo")
+            .with_receiver(Receiver::BorrowedMut)
+            .with_param(("x", "u32"));
+        assert_eq!(s.to_code(), "foo(&mut self, x: u32)");
+    }
+
+    #[test]
+    fn signature_with_result() {
+        let s = Signature::from("foo").with_result(RustType::from("bool"));
+        assert_eq!(s.to_code(), "foo() -> bool");
+    }
+
+    #[test]
+    fn signature_with_generics() {
+        let s = Signature::from("foo")
+            .with_generic(Var::from(("T", "Display")))
+            .with_param(("value", "T"))
+            .with_result(RustType::from("String"));
+        assert_eq!(s.to_code(), "foo<T>(value: T) -> String where T: Display");
     }
 }

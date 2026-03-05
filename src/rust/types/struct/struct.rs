@@ -39,7 +39,7 @@ impl WithComments for Struct {
     where
         S: Into<String>,
     {
-        self.comments.push(comment.into())
+        self.comments.push(comment.into());
     }
 }
 
@@ -65,7 +65,7 @@ impl WithAttributes for Struct {
     where
         S: Into<String>,
     {
-        self.attributes.push(attribute.into())
+        self.attributes.push(attribute.into());
     }
 }
 
@@ -78,7 +78,7 @@ impl WithAccess for Struct {
     where
         A: Into<Access>,
     {
-        self.access = access.into()
+        self.access = access.into();
     }
 }
 
@@ -97,7 +97,7 @@ impl WithGenerics for Struct {
     where
         V: Into<Var>,
     {
-        self.generics.push(generic.into())
+        self.generics.push(generic.into());
     }
 }
 
@@ -133,5 +133,54 @@ impl Statement for Struct {
             self.write_fields(b, level + 1);
             b.line(level, "}");
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::rust::WithComments;
+
+    #[test]
+    fn empty_struct() {
+        let s = Struct::from("Empty");
+        assert_eq!(s.to_code(), "struct Empty {}\n");
+    }
+
+    #[test]
+    fn public_struct_with_fields() {
+        let s = Struct::from("Point")
+            .with_access(Access::Public)
+            .with_field(StructField::from(("x", "f64")).with_access(Access::Public))
+            .with_field(StructField::from(("y", "f64")).with_access(Access::Public));
+        assert_eq!(
+            s.to_code(),
+            "pub struct Point {\n    pub x: f64,\n    pub y: f64,\n}\n"
+        );
+    }
+
+    #[test]
+    fn struct_with_derives() {
+        let s = Struct::from("Foo")
+            .with_derive("Clone")
+            .with_derive("Debug");
+        assert_eq!(s.to_code(), "#[derive(Clone, Debug)]\nstruct Foo {}\n");
+    }
+
+    #[test]
+    fn struct_with_generics() {
+        let s = Struct::from("Wrapper")
+            .with_generic(Var::from(("T", "Clone")))
+            .with_field(StructField::from(("value", "T")));
+        assert_eq!(
+            s.to_code(),
+            "struct Wrapper<T: Clone> {\n    value: T,\n}\n"
+        );
+    }
+
+    #[test]
+    fn struct_with_comment() {
+        let s = Struct::from("Foo").with_comment("A foo.");
+        assert_eq!(s.to_code(), "///A foo.\nstruct Foo {}\n");
     }
 }

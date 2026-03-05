@@ -68,11 +68,33 @@ impl Statement for TypeDec {
     fn write(&self, b: &mut CodeBuffer, level: usize) {
         self.write_comments(OuterLineDoc, b, level);
         b.indent(level);
+        self.write_access(b);
         b.write("type ");
         self.write_name(b);
         b.write(" = ");
         self.write_rust_type(b);
         b.push(';');
         b.end_line();
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn simple_type_dec() {
+        let t = TypeDec::from(Var::from(("Result", "std::result::Result<T, MyError>")));
+        assert_eq!(
+            t.to_code(),
+            "type Result = std::result::Result<T, MyError>;\n"
+        );
+    }
+
+    #[test]
+    fn public_type_dec() {
+        use crate::rust::WithAccess;
+        let t = TypeDec::from(Var::from(("Id", "u64"))).with_access(Access::Public);
+        assert_eq!(t.to_code(), "pub type Id = u64;\n");
     }
 }

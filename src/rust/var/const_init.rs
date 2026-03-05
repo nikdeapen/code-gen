@@ -65,3 +65,32 @@ impl Statement for ConstInit {
         b.end_line();
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::Literal;
+
+    #[test]
+    fn const_init_statement() {
+        let c = ConstInit::from((("MAX", "u32"), Literal::from("100")));
+        assert_eq!(c.to_code(), "const MAX: u32 = 100;\n");
+    }
+
+    #[test]
+    fn const_init_public() {
+        let mut c = ConstInit::from((("MAX", "u32"), Literal::from("100")));
+        c.set_access(Access::Public);
+        assert_eq!(c.to_code(), "pub const MAX: u32 = 100;\n");
+    }
+
+    #[test]
+    fn const_init_with_comment() {
+        let mut c = ConstInit::from((("MAX", "u32"), Literal::from("100")));
+        c.add_comment("The maximum value.");
+        assert_eq!(
+            c.to_code(),
+            "///The maximum value.\nconst MAX: u32 = 100;\n"
+        );
+    }
+}

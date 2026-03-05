@@ -36,3 +36,14 @@ impl Expression for Var {
         self.write_rust_type(b);
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn var_expression() {
+        let v = Var::from(("count", "u32"));
+        assert_eq!(v.to_code(), "count: u32");
+    }
+}

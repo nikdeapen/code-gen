@@ -32,3 +32,36 @@ impl Expression for Access {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn private() {
+        assert_eq!(Access::Private.to_code(), "");
+    }
+
+    #[test]
+    fn public() {
+        assert_eq!(Access::Public.to_code(), "pub ");
+    }
+
+    #[test]
+    fn public_in_crate() {
+        assert_eq!(Access::PublicInCrate.to_code(), "pub(crate) ");
+    }
+
+    #[test]
+    fn public_in_super() {
+        assert_eq!(Access::PublicInSuper.to_code(), "pub(super) ");
+    }
+
+    #[test]
+    fn public_in_path() {
+        assert_eq!(
+            Access::PublicInPath("crate::foo".into()).to_code(),
+            "pub(in crate::foo) "
+        );
+    }
+}

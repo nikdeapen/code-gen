@@ -1,4 +1,4 @@
-use crate::rust::RustType::*;
+use crate::rust::RustType::{Generic, Named, Primitive, Ref, Slice, Tuple};
 use crate::rust::{Reference, RustPrimitive};
 use crate::{CodeBuffer, Expression, WithName};
 use std::fmt::{Display, Formatter};
@@ -47,6 +47,7 @@ impl RustType {
     //! Reference Types
 
     /// Converts the type to a reference type of itself.
+    #[must_use]
     pub fn to_ref<R>(self, reference: R) -> Self
     where
         R: Into<Reference>,
@@ -62,13 +63,14 @@ impl RustType {
     //! Slice Types
 
     /// Converts the type to a slice type of itself.
+    #[must_use]
     pub fn to_slice(self) -> Self {
         Slice(Box::new(self))
     }
 }
 
 impl RustType {
-    //! Generics Types
+    //! Generic Types
 
     /// Adds the generic type.
     #[must_use]
@@ -89,11 +91,13 @@ impl RustType {
     }
 
     /// Converts the type to an `Option` of itself.
+    #[must_use]
     pub fn to_option(self) -> Self {
         Self::from("Option").with_generic(self)
     }
 
     /// Converts the type to a `Vec` of itself.
+    #[must_use]
     pub fn to_vec(self) -> Self {
         Self::from("Vec").with_generic(self)
     }
@@ -142,8 +146,95 @@ impl Expression for RustType {
 
 impl Display for RustType {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        let mut b: CodeBuffer = CodeBuffer::new("", "", 64);
-        self.write(&mut b);
-        write!(f, "{}", b)
+        f.write_str(&self.to_code())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::rust::RustPrimitive;
+
+    #[test]
+    fn named_type() {
+        let t = RustType::from("MyStruct");
+        assert_eq!(t.to_code(), "MyStruct");
+    }
+
+    #[test]
+    fn primitive_type() {
+        let t = RustType::from(RustPrimitive::UnsignedInt32);
+        assert_eq!(t.to_code(), "u32");
+    }
+
+    #[test]
+    fn reference_type() {
+        let t = RustType::from("str").to_ref(Reference::default());
+        assert_eq!(t.to_code(), "&str");
+    }
+
+    #[test]
+    fn mut_reference_type() {
+        let t = RustType::from("Self").to_ref(Reference::default().with_mut());
+        assert_eq!(t.to_code(), "&mut Self");
+    }
+
+    #[test]
+    fn static_lifetime_reference() {
+        let t = RustType::from("str").to_ref(Reference::default().with_static_lifetime());
+        assert_eq!(t.to_code(), "&'static str");
+    }
+
+    #[test]
+    fn named_lifetime_reference() {
+        let t = RustType::from("str").to_ref(Reference::default().with_lifetime('a').unwrap());
+        assert_eq!(t.to_code(), "&'a str");
+    }
+
+    #[test]
+    fn slice_type() {
+        let t = RustType::from(RustPrimitive::UnsignedInt8).to_slice();
+        assert_eq!(t.to_code(), "[u8]");
+    }
+
+    #[test]
+    fn generic_type() {
+        let t = RustType::from("Vec").with_generic(RustType::from("String"));
+        assert_eq!(t.to_code(), "Vec<String>");
+    }
+
+    #[test]
+    fn generic_type_multiple() {
+        let t = RustType::from("HashMap")
+            .with_generic(RustType::from("String"))
+            .with_generic(RustType::from(RustPrimitive::UnsignedInt32));
+        assert_eq!(t.to_code(), "HashMap<String, u32>");
+    }
+
+    #[test]
+    fn option_type() {
+        let t = RustType::from("String").to_option();
+        assert_eq!(t.to_code(), "Option<String>");
+    }
+
+    #[test]
+    fn vec_type() {
+        let t = RustType::from(RustPrimitive::UnsignedInt8).to_vec();
+        assert_eq!(t.to_code(), "Vec<u8>");
+    }
+
+    #[test]
+    fn tuple_type() {
+        let t = Tuple(vec![
+            RustType::from("String"),
+            RustType::from(RustPrimitive::UnsignedInt32),
+        ]);
+        assert_eq!(t.to_code(), "(String, u32)");
+    }
+
+    #[test]
+    fn display_matches_to_code() {
+        let t = RustType::from("Vec").with_generic(RustType::from("String"));
+        assert_eq!(format!("{t}"), t.to_code());
     }
 }

@@ -33,6 +33,7 @@ impl IfStatement {
     //! Success
 
     /// Gets the success statements.
+    #[must_use]
     pub fn success_statements(&self) -> &Block {
         &self.success_statements
     }
@@ -60,6 +61,7 @@ impl IfStatement {
     //! Else
 
     /// Gets the else statements.
+    #[must_use]
     pub fn else_statements(&self) -> &Block {
         &self.else_statements
     }
@@ -98,5 +100,28 @@ impl Statement for IfStatement {
             self.else_statements.write(b, level + 1);
         }
         b.line(level, "}");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn simple_if() {
+        let s = IfStatement::from("x > 0")
+            .with_success_statements(Block::default().with_semi("do_something()"));
+        assert_eq!(s.to_code(), "if x > 0 {\n    do_something();\n}\n");
+    }
+
+    #[test]
+    fn if_else() {
+        let s = IfStatement::from("x > 0")
+            .with_success_statements(Block::default().with_semi("yes()"))
+            .with_else_statements(Block::default().with_semi("no()"));
+        assert_eq!(
+            s.to_code(),
+            "if x > 0 {\n    yes();\n} else {\n    no();\n}\n"
+        );
     }
 }

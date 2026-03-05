@@ -72,6 +72,7 @@ impl Enum {
     //! Cases
 
     /// Gets the cases.
+    #[must_use]
     pub fn cases(&self) -> &[EnumCase] {
         self.cases.as_slice()
     }
@@ -109,8 +110,8 @@ impl Enum {
 impl Statement for Enum {
     fn write(&self, b: &mut CodeBuffer, level: usize) {
         self.write_comments(OuterLineDoc, b, level);
-        b.indent(level);
         self.write_derives(b, level);
+        b.indent(level);
         self.write_access(b);
         b.write("enum ");
         self.write_name(b);
@@ -123,5 +124,46 @@ impl Statement for Enum {
             self.write_cases(b, level + 1);
             b.line(level, "}");
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::rust::{EnumFields, RustType, WithAccess};
+
+    #[test]
+    fn empty_enum() {
+        let e = Enum::from("Empty");
+        assert_eq!(e.to_code(), "enum Empty {}\n");
+    }
+
+    #[test]
+    fn enum_with_simple_cases() {
+        let e = Enum::from("Color")
+            .with_access(Access::Public)
+            .with_case(EnumCase::from("Red"))
+            .with_case(EnumCase::from("Green"))
+            .with_case(EnumCase::from("Blue"));
+        assert_eq!(
+            e.to_code(),
+            "pub enum Color {\n    Red,\n    \n    Green,\n    \n    Blue,\n}\n"
+        );
+    }
+
+    #[test]
+    fn enum_with_derives() {
+        let e = Enum::from("Dir")
+            .with_derive("Clone")
+            .with_case(EnumCase::from("Up"));
+        assert_eq!(e.to_code(), "#[derive(Clone)]\nenum Dir {\n    Up,\n}\n");
+    }
+
+    #[test]
+    fn enum_with_unnamed_fields() {
+        let e = Enum::from("Value").with_case(
+            EnumCase::from("Int").with_fields(EnumFields::Unnamed(vec![RustType::from("i64")])),
+        );
+        assert_eq!(e.to_code(), "enum Value {\n    Int(i64),\n}\n");
     }
 }
