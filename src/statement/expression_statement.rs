@@ -18,3 +18,23 @@ impl<E: Expression> Statement for ExpressionStatement<E> {
         b.end_line();
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::Literal;
+
+    #[test]
+    fn expression_statement() {
+        let stmt = ExpressionStatement::from(Literal::from("hello"));
+        assert_eq!(stmt.to_code(), "hello\n");
+    }
+
+    #[test]
+    fn expression_statement_indented() {
+        let stmt = ExpressionStatement::from(Literal::from("hello"));
+        let mut b = CodeBuffer::default();
+        stmt.write(&mut b, 1);
+        assert_eq!(b.peek(), "    hello\n");
+    }
+}

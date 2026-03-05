@@ -54,6 +54,7 @@ impl EnumCase {
     }
 
     /// Sets the `fields`.
+    #[must_use]
     pub fn with_fields<F>(mut self, fields: F) -> Self
     where
         F: Into<EnumFields>,
@@ -69,7 +70,7 @@ impl Statement for EnumCase {
         b.indent(level);
         self.write_name(b);
         self.fields.write(b);
-        b.write(",");
+        b.push(',');
         b.end_line();
     }
 }

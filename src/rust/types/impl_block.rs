@@ -65,6 +65,7 @@ impl ImplBlock {
     }
 
     /// Sets the `for_trait`.
+    #[must_use]
     pub fn with_for_trait<T>(mut self, for_trait: T) -> Self
     where
         T: Into<RustType>,
@@ -114,6 +115,7 @@ impl ImplBlock {
     }
 
     /// Adds the constant.
+    #[must_use]
     pub fn with_constant(mut self, constant: ConstInit) -> Self {
         self.add_constant(constant);
         self
@@ -163,7 +165,7 @@ impl Statement for ImplBlock {
         self.structure.write(b);
         b.write(" {");
         if self.is_empty() {
-            b.write("}");
+            b.push('}');
             b.end_line();
         } else {
             b.end_line();

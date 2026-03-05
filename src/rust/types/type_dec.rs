@@ -72,7 +72,7 @@ impl Statement for TypeDec {
         self.write_name(b);
         b.write(" = ");
         self.write_rust_type(b);
-        b.write(";");
+        b.push(';');
         b.end_line();
     }
 }

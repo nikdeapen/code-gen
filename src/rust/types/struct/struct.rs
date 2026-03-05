@@ -126,7 +126,7 @@ impl Statement for Struct {
         self.write_generic_brackets(b);
         b.write(" {");
         if self.fields.is_empty() {
-            b.write("}");
+            b.push('}');
             b.end_line();
         } else {
             b.end_line();

@@ -20,3 +20,20 @@ impl Expression for Literal {
         b.write(self.value.as_str());
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn from_str() {
+        let lit = Literal::from("hello");
+        assert_eq!(lit.to_code(), "hello");
+    }
+
+    #[test]
+    fn from_string() {
+        let lit = Literal::from(String::from("world"));
+        assert_eq!(lit.to_code(), "world");
+    }
+}

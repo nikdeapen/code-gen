@@ -42,7 +42,7 @@ impl Statement for SignatureDec {
         b.indent(level);
         b.write("fn ");
         self.write_signature(b);
-        b.write(";");
+        b.push(';');
         b.end_line();
     }
 }

@@ -11,3 +11,20 @@ impl Statement for EmptyLine {
         b.line(level, "");
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn empty_line_at_level_0() {
+        assert_eq!(EmptyLine::default().to_code(), "\n");
+    }
+
+    #[test]
+    fn empty_line_at_level_1() {
+        let mut b = CodeBuffer::default();
+        EmptyLine::default().write(&mut b, 1);
+        assert_eq!(b.peek(), "    \n");
+    }
+}

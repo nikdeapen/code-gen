@@ -9,6 +9,7 @@ pub trait WithStatements: Sized {
     fn add_boxed_statement(&mut self, statement: Box<dyn Statement>);
 
     /// Adds the boxed `statement`.
+    #[must_use]
     fn with_boxed_statement(mut self, statement: Box<dyn Statement>) -> Self {
         self.add_boxed_statement(statement);
         self
@@ -23,6 +24,7 @@ pub trait WithStatements: Sized {
     }
 
     /// Adds the `statement`.
+    #[must_use]
     fn with_statement<S>(self, statement: S) -> Self
     where
         S: 'static + Statement,
@@ -39,6 +41,7 @@ pub trait WithStatements: Sized {
     }
 
     /// Adds the `literal` statement.
+    #[must_use]
     fn with_literal<L>(self, literal: L) -> Self
     where
         L: Into<Literal>,
@@ -51,10 +54,11 @@ pub trait WithStatements: Sized {
     where
         L: Into<Literal>,
     {
-        self.add_statement(Semi::from(literal.into()))
+        self.add_statement(Semi::from(literal.into()));
     }
 
     /// Adds the semicolon ended `literal` statement.
+    #[must_use]
     fn with_semi<L>(self, literal: L) -> Self
     where
         L: Into<Literal>,
@@ -71,6 +75,7 @@ pub trait WithStatements: Sized {
     }
 
     /// Adds the `expression` as a statement.
+    #[must_use]
     fn with_expression_statement<E>(self, expression: E) -> Self
     where
         E: 'static + Expression,
@@ -84,6 +89,7 @@ pub trait WithStatements: Sized {
     }
 
     /// Adds an empty line.
+    #[must_use]
     fn with_empty_line(self) -> Self {
         self.with_statement(EmptyLine::default())
     }
@@ -97,14 +103,14 @@ pub trait WithStatements: Sized {
 
     /// Writes the curly-bracketed statement block. (`level` is the outer level)
     fn write_curly_statement_block(&self, b: &mut CodeBuffer, level: usize) {
-        b.write("{");
+        b.push('{');
         if self.statements().is_empty() {
-            b.write("}");
+            b.push('}');
         } else {
             b.end_line();
             self.write_statements(b, level + 1);
             b.indent(level);
-            b.write("}");
+            b.push('}');
         }
     }
 }

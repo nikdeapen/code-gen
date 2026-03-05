@@ -14,6 +14,7 @@ impl Reference {
     //! Mutations
 
     /// Sets the reference to mutable.
+    #[must_use]
     pub fn with_mut(self) -> Self {
         Self {
             mutable: true,
@@ -22,6 +23,7 @@ impl Reference {
     }
 
     /// Sets the lifetime.
+    #[must_use]
     pub fn with_lifetime(self, c: char) -> Option<Self> {
         if !c.is_ascii_lowercase() {
             None
@@ -34,6 +36,7 @@ impl Reference {
     }
 
     /// Sets the lifetime to `static`.
+    #[must_use]
     pub fn with_static_lifetime(self) -> Self {
         Self {
             mutable: self.mutable,
@@ -44,14 +47,12 @@ impl Reference {
 
 impl Expression for Reference {
     fn write(&self, b: &mut CodeBuffer) {
-        b.write("&");
+        b.push('&');
         if let Some(lifetime) = self.lifetime {
-            b.write("'");
+            b.push('\'');
             if let Some(lifetime) = lifetime {
-                let mut buffer: [u8; 4] = [0u8; 4];
-                let char_str: &str = lifetime.encode_utf8(&mut buffer);
-                b.write(char_str);
-                b.write(" ");
+                b.push(lifetime);
+                b.push(' ');
             } else {
                 b.write("static ")
             }

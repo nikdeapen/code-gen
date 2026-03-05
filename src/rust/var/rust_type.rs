@@ -71,6 +71,7 @@ impl RustType {
     //! Generics Types
 
     /// Adds the generic type.
+    #[must_use]
     pub fn with_generic<T>(self, generic: T) -> Self
     where
         T: Into<RustType>,
@@ -108,7 +109,7 @@ impl Expression for RustType {
                 base.write(b);
             }
             Tuple(members) => {
-                b.write("(");
+                b.push('(');
                 if let Some((first, rest)) = members.split_first() {
                     first.write(b);
                     for member in rest {
@@ -116,23 +117,23 @@ impl Expression for RustType {
                         member.write(b);
                     }
                 }
-                b.write(")");
+                b.push(')');
             }
             Slice(base) => {
-                b.write("[");
+                b.push('[');
                 base.write(b);
-                b.write("]");
+                b.push(']');
             }
             Generic { base, generics } => {
                 base.write(b);
                 if let Some((first, rest)) = generics.split_first() {
-                    b.write("<");
+                    b.push('<');
                     first.write(b);
                     for generic in rest {
                         b.write(", ");
                         generic.write(b);
                     }
-                    b.write(">");
+                    b.push('>');
                 }
             }
         }
