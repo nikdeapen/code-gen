@@ -49,7 +49,8 @@ impl RustPrimitive {
     //! Rust Types
 
     /// Converts the Rust primitive to a Rust type.
-    pub const fn to_type_tag(&self) -> RustType {
+    #[must_use]
+    pub const fn to_rust_type(&self) -> RustType {
         RustType::Primitive(*self)
     }
 }

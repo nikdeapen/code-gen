@@ -1,7 +1,8 @@
 use crate::rust::Var;
 use crate::{CodeBuffer, Expression, WithName};
 
-/// An element with function generics.
+/// An element with function generics. Writes `<Name, ...>` in brackets and a separate `where`
+/// clause with the type bounds.
 pub trait WithFnGenerics: Sized {
     /// Gets the generic type parameters.
     fn generics(&self) -> &[Var];
@@ -34,7 +35,7 @@ pub trait WithFnGenerics: Sized {
         }
     }
 
-    //// Writes the generic where clause.
+    /// Writes the generic where clause.
     fn write_generic_where(&self, b: &mut CodeBuffer) {
         if let Some((first, rest)) = self.generics().split_first() {
             b.write(" where ");

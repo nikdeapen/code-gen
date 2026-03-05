@@ -7,6 +7,11 @@ pub trait WithComments: Sized {
     fn comments(&self) -> &[String];
 
     /// Adds the `comment` line.
+    fn add_comment<S>(&mut self, comment: S)
+    where
+        S: Into<String>;
+
+    /// Adds the `comment` line.
     #[must_use]
     fn with_comment<S>(mut self, comment: S) -> Self
     where
@@ -15,11 +20,6 @@ pub trait WithComments: Sized {
         self.add_comment(comment);
         self
     }
-
-    /// Adds the `comment` line.
-    fn add_comment<S>(&mut self, comment: S)
-    where
-        S: Into<String>;
 
     /// Writes the comment lines.
     fn write_comments(&self, comment_type: CommentType, b: &mut CodeBuffer, level: usize) {

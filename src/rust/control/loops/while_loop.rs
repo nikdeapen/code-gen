@@ -1,6 +1,6 @@
 use crate::{CodeBuffer, Expression, Statement, WithStatements};
 
-/// A `while` loops.
+/// A `while` loop.
 pub struct WhileLoop {
     expression: Box<dyn Expression>,
     statements: Vec<Box<dyn Statement>>,
@@ -22,6 +22,18 @@ impl WithStatements for WhileLoop {
 
     fn add_boxed_statement(&mut self, statement: Box<dyn Statement>) {
         self.statements.push(statement);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{Literal, WithStatements};
+
+    #[test]
+    fn simple_while_loop() {
+        let l = WhileLoop::from(Literal::from("running")).with_semi("step()");
+        assert_eq!(l.to_code(), "while running {\n    step();\n}\n");
     }
 }
 

@@ -41,6 +41,7 @@ impl EnumCase {
     //! Fields
 
     /// Gets the fields.
+    #[must_use]
     pub fn fields(&self) -> &EnumFields {
         &self.fields
     }

@@ -18,7 +18,7 @@ pub trait WithUnsafeFlag: Sized {
     /// Writes the optional unsafe flag.
     fn write_unsafe(&self, b: &mut CodeBuffer) {
         if self.is_unsafe() {
-            b.write("unsafe ")
+            b.write("unsafe ");
         }
     }
 }

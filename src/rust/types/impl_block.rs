@@ -52,6 +52,7 @@ impl ImplBlock {
     //! For Trait
 
     /// Gets the optional `for` trait.
+    #[must_use]
     pub fn for_trait(&self) -> Option<&RustType> {
         self.for_trait.as_ref()
     }
@@ -105,6 +106,7 @@ impl ImplBlock {
     //! Constants
 
     /// Gets the constants.
+    #[must_use]
     pub fn constants(&self) -> &[ConstInit] {
         self.constants.as_slice()
     }
@@ -121,7 +123,7 @@ impl ImplBlock {
         self
     }
 
-    /// Adds the constant.
+    /// Writes the constants.
     pub fn write_constants(&self, b: &mut CodeBuffer, level: usize) {
         for constant in self.constants() {
             EmptyLine::default().write(b, level);
@@ -149,6 +151,61 @@ impl IsEmpty for ImplBlock {
             && self.type_decs().is_empty()
             && self.constants.is_empty()
             && self.functions.is_empty()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::rust::{Access, Receiver, Signature, Var, WithAccess, WithReceiver, WithResult, WithVarParams};
+    use crate::WithStatements;
+
+    #[test]
+    fn empty_impl() {
+        let i = ImplBlock::from(RustType::from("Foo"));
+        assert_eq!(i.to_code(), "impl Foo {}\n");
+    }
+
+    #[test]
+    fn impl_with_function() {
+        let i = ImplBlock::from(RustType::from("Foo")).with_function(
+            Function::from(
+                Signature::from("new").with_result(RustType::from("Self")),
+            )
+            .with_access(Access::Public)
+            .with_semi("Self {}"),
+        );
+        assert_eq!(
+            i.to_code(),
+            "impl Foo {\n\n    pub fn new() -> Self {\n        Self {};\n    }\n}\n"
+        );
+    }
+
+    #[test]
+    fn impl_for_trait() {
+        let i = ImplBlock::from(RustType::from("Foo"))
+            .with_for_trait(RustType::from("Display"))
+            .with_function(
+                Function::from(
+                    Signature::from("fmt")
+                        .with_receiver(Receiver::Borrowed)
+                        .with_param(("f", "&mut Formatter")),
+                )
+                .with_semi("write!(f, \"Foo\")"),
+            );
+        assert_eq!(
+            i.to_code(),
+            "impl Display for Foo {\n\n    fn fmt(&self, f: &mut Formatter) {\n        write!(f, \"Foo\");\n    }\n}\n"
+        );
+    }
+
+    #[test]
+    fn impl_with_generics() {
+        let i = ImplBlock::from(
+            RustType::from("Wrapper").with_generic(RustType::from("T")),
+        )
+        .with_generic(Var::from(("T", "Clone")));
+        assert_eq!(i.to_code(), "impl<T: Clone> Wrapper<T> {}\n");
     }
 }
 

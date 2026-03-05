@@ -22,6 +22,18 @@ impl<V: Into<Var>, E: 'static + Expression> From<(V, E)> for VarInit {
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::Literal;
+
+    #[test]
+    fn var_init_statement() {
+        let v = VarInit::from((("x", "u32"), Literal::from("42")));
+        assert_eq!(v.to_code(), "let x: u32 = 42;\n");
+    }
+}
+
 impl Statement for VarInit {
     fn write(&self, b: &mut CodeBuffer, level: usize) {
         b.indent(level);
