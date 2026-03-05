@@ -91,10 +91,7 @@ mod tests {
 
     #[test]
     fn mut_with_lifetime() {
-        let r = Reference::default()
-            .with_mut()
-            .with_lifetime('a')
-            .unwrap();
+        let r = Reference::default().with_mut().with_lifetime('a').unwrap();
         assert_eq!(r.to_code(), "&'a mut ");
     }
 }

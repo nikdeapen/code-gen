@@ -119,8 +119,8 @@ impl WithStatements for Function {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::rust::{Receiver, RustType, WithReceiver, WithResult};
     use crate::WithStatements;
+    use crate::rust::{Receiver, RustType, WithReceiver, WithResult};
 
     #[test]
     fn empty_function() {

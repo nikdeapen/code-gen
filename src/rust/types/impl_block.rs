@@ -157,8 +157,10 @@ impl IsEmpty for ImplBlock {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::rust::{Access, Receiver, Signature, Var, WithAccess, WithReceiver, WithResult, WithVarParams};
     use crate::WithStatements;
+    use crate::rust::{
+        Access, Receiver, Signature, Var, WithAccess, WithReceiver, WithResult, WithVarParams,
+    };
 
     #[test]
     fn empty_impl() {
@@ -169,11 +171,9 @@ mod tests {
     #[test]
     fn impl_with_function() {
         let i = ImplBlock::from(RustType::from("Foo")).with_function(
-            Function::from(
-                Signature::from("new").with_result(RustType::from("Self")),
-            )
-            .with_access(Access::Public)
-            .with_semi("Self {}"),
+            Function::from(Signature::from("new").with_result(RustType::from("Self")))
+                .with_access(Access::Public)
+                .with_semi("Self {}"),
         );
         assert_eq!(
             i.to_code(),
@@ -201,10 +201,8 @@ mod tests {
 
     #[test]
     fn impl_with_generics() {
-        let i = ImplBlock::from(
-            RustType::from("Wrapper").with_generic(RustType::from("T")),
-        )
-        .with_generic(Var::from(("T", "Clone")));
+        let i = ImplBlock::from(RustType::from("Wrapper").with_generic(RustType::from("T")))
+            .with_generic(Var::from(("T", "Clone")));
         assert_eq!(i.to_code(), "impl<T: Clone> Wrapper<T> {}\n");
     }
 }

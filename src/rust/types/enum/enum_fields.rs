@@ -39,10 +39,7 @@ mod tests {
 
     #[test]
     fn named_multiple() {
-        let f = EnumFields::Named(vec![
-            Var::from(("x", "u32")),
-            Var::from(("y", "u32")),
-        ]);
+        let f = EnumFields::Named(vec![Var::from(("x", "u32")), Var::from(("y", "u32"))]);
         assert_eq!(f.to_code(), "{ x: u32, y: u32 }");
     }
 }

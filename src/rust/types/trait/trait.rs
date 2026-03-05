@@ -108,8 +108,8 @@ impl IsEmpty for Trait {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::rust::{Receiver, RustType, Signature, WithReceiver, WithResult};
     use crate::WithStatements;
+    use crate::rust::{Receiver, RustType, Signature, WithReceiver, WithResult};
 
     #[test]
     fn empty_trait() {
@@ -138,10 +138,7 @@ mod tests {
             Function::from(
                 Signature::from("name")
                     .with_receiver(Receiver::Borrowed)
-                    .with_result(
-                        RustType::from("str")
-                            .to_ref(crate::rust::Reference::default()),
-                    ),
+                    .with_result(RustType::from("str").to_ref(crate::rust::Reference::default())),
             )
             .with_semi("\"unnamed\""),
         );

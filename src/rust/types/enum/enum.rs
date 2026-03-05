@@ -136,10 +136,7 @@ mod tests {
         let e = Enum::from("Dir")
             .with_derive("Clone")
             .with_case(EnumCase::from("Up"));
-        assert_eq!(
-            e.to_code(),
-            "#[derive(Clone)]\nenum Dir {\n    Up,\n}\n"
-        );
+        assert_eq!(e.to_code(), "#[derive(Clone)]\nenum Dir {\n    Up,\n}\n");
     }
 
     #[test]
