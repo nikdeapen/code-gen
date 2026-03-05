@@ -105,6 +105,33 @@ impl IsEmpty for Trait {
     }
 }
 
+impl Statement for Trait {
+    fn write(&self, b: &mut CodeBuffer, level: usize) {
+        self.write_comments(OuterLineDoc, b, level);
+        self.write_attributes(b, level);
+        b.indent(level);
+        self.write_access(b);
+        b.write("trait ");
+        self.write_name(b);
+        b.write(" {");
+        if self.is_empty() {
+            b.push('}');
+            b.end_line();
+        } else {
+            b.end_line();
+            for function in self.signature_decs() {
+                b.end_line();
+                function.write(b, level + 1);
+            }
+            for function in self.functions() {
+                b.end_line();
+                function.write(b, level + 1);
+            }
+            b.line(level, "}");
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -146,32 +173,5 @@ mod tests {
             t.to_code(),
             "trait HasName {\n\n    fn name(&self) -> &str {\n        \"unnamed\";\n    }\n}\n"
         );
-    }
-}
-
-impl Statement for Trait {
-    fn write(&self, b: &mut CodeBuffer, level: usize) {
-        self.write_comments(OuterLineDoc, b, level);
-        self.write_attributes(b, level);
-        b.indent(level);
-        self.write_access(b);
-        b.write("trait ");
-        self.write_name(b);
-        b.write(" {");
-        if self.is_empty() {
-            b.push('}');
-            b.end_line();
-        } else {
-            b.end_line();
-            for function in self.signature_decs() {
-                b.end_line();
-                function.write(b, level + 1);
-            }
-            for function in self.functions() {
-                b.end_line();
-                function.write(b, level + 1);
-            }
-            b.line(level, "}");
-        }
     }
 }

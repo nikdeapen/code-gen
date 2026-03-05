@@ -114,6 +114,28 @@ impl WithStructFields for Struct {
     }
 }
 
+impl Statement for Struct {
+    fn write(&self, b: &mut CodeBuffer, level: usize) {
+        self.write_comments(CommentType::OuterLineDoc, b, level);
+        self.write_derives(b, level);
+        self.write_attributes(b, level);
+        b.indent(level);
+        self.write_access(b);
+        b.write("struct ");
+        self.write_name(b);
+        self.write_generic_brackets(b);
+        b.write(" {");
+        if self.fields.is_empty() {
+            b.push('}');
+            b.end_line();
+        } else {
+            b.end_line();
+            self.write_fields(b, level + 1);
+            b.line(level, "}");
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -160,27 +182,5 @@ mod tests {
     fn struct_with_comment() {
         let s = Struct::from("Foo").with_comment("A foo.");
         assert_eq!(s.to_code(), "///A foo.\nstruct Foo {}\n");
-    }
-}
-
-impl Statement for Struct {
-    fn write(&self, b: &mut CodeBuffer, level: usize) {
-        self.write_comments(CommentType::OuterLineDoc, b, level);
-        self.write_derives(b, level);
-        self.write_attributes(b, level);
-        b.indent(level);
-        self.write_access(b);
-        b.write("struct ");
-        self.write_name(b);
-        self.write_generic_brackets(b);
-        b.write(" {");
-        if self.fields.is_empty() {
-            b.push('}');
-            b.end_line();
-        } else {
-            b.end_line();
-            self.write_fields(b, level + 1);
-            b.line(level, "}");
-        }
     }
 }

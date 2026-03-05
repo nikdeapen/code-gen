@@ -10,6 +10,18 @@ pub enum Receiver {
     OwnedMut,
 }
 
+impl Expression for Receiver {
+    fn write(&self, b: &mut CodeBuffer) {
+        let s: &str = match self {
+            Self::Borrowed => "&self",
+            Self::BorrowedMut => "&mut self",
+            Self::Owned => "self",
+            Self::OwnedMut => "mut self",
+        };
+        b.write(s);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -37,17 +49,5 @@ mod tests {
     #[test]
     fn default_is_borrowed() {
         assert_eq!(Receiver::default(), Receiver::Borrowed);
-    }
-}
-
-impl Expression for Receiver {
-    fn write(&self, b: &mut CodeBuffer) {
-        let s: &str = match self {
-            Self::Borrowed => "&self",
-            Self::BorrowedMut => "&mut self",
-            Self::Owned => "self",
-            Self::OwnedMut => "mut self",
-        };
-        b.write(s);
     }
 }

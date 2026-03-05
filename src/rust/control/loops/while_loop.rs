@@ -25,6 +25,17 @@ impl WithStatements for WhileLoop {
     }
 }
 
+impl Statement for WhileLoop {
+    fn write(&self, b: &mut CodeBuffer, level: usize) {
+        b.indent(level);
+        b.write("while ");
+        self.expression.write(b);
+        b.space();
+        self.write_curly_statement_block(b, level);
+        b.end_line();
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -34,16 +45,5 @@ mod tests {
     fn simple_while_loop() {
         let l = WhileLoop::from(Literal::from("running")).with_semi("step()");
         assert_eq!(l.to_code(), "while running {\n    step();\n}\n");
-    }
-}
-
-impl Statement for WhileLoop {
-    fn write(&self, b: &mut CodeBuffer, level: usize) {
-        b.indent(level);
-        b.write("while ");
-        self.expression.write(b);
-        b.space();
-        self.write_curly_statement_block(b, level);
-        b.end_line();
     }
 }

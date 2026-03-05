@@ -17,6 +17,22 @@ impl<S: Into<String>> From<S> for Access {
     }
 }
 
+impl Expression for Access {
+    fn write(&self, b: &mut CodeBuffer) {
+        match self {
+            Self::Private => {}
+            Self::Public => b.write("pub "),
+            Self::PublicInCrate => b.write("pub(crate) "),
+            Self::PublicInSuper => b.write("pub(super) "),
+            Self::PublicInPath(path) => {
+                b.write("pub(in ");
+                b.write(path.as_str());
+                b.write(") ");
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -47,21 +63,5 @@ mod tests {
             Access::PublicInPath("crate::foo".into()).to_code(),
             "pub(in crate::foo) "
         );
-    }
-}
-
-impl Expression for Access {
-    fn write(&self, b: &mut CodeBuffer) {
-        match self {
-            Self::Private => {}
-            Self::Public => b.write("pub "),
-            Self::PublicInCrate => b.write("pub(crate) "),
-            Self::PublicInSuper => b.write("pub(super) "),
-            Self::PublicInPath(path) => {
-                b.write("pub(in ");
-                b.write(path.as_str());
-                b.write(") ");
-            }
-        }
     }
 }

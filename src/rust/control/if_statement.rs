@@ -85,6 +85,24 @@ impl IfStatement {
     }
 }
 
+impl Statement for IfStatement {
+    fn write(&self, b: &mut CodeBuffer, level: usize) {
+        b.indent(level);
+        b.write("if ");
+        self.condition.write(b);
+        b.write(" {");
+        b.end_line();
+        self.success_statements.write(b, level + 1);
+        if !self.else_statements.statements().is_empty() {
+            b.indent(level);
+            b.write("} else {");
+            b.end_line();
+            self.else_statements.write(b, level + 1);
+        }
+        b.line(level, "}");
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -105,23 +123,5 @@ mod tests {
             s.to_code(),
             "if x > 0 {\n    yes();\n} else {\n    no();\n}\n"
         );
-    }
-}
-
-impl Statement for IfStatement {
-    fn write(&self, b: &mut CodeBuffer, level: usize) {
-        b.indent(level);
-        b.write("if ");
-        self.condition.write(b);
-        b.write(" {");
-        b.end_line();
-        self.success_statements.write(b, level + 1);
-        if !self.else_statements.statements().is_empty() {
-            b.indent(level);
-            b.write("} else {");
-            b.end_line();
-            self.else_statements.write(b, level + 1);
-        }
-        b.line(level, "}");
     }
 }

@@ -54,6 +54,24 @@ impl Reference {
     }
 }
 
+impl Expression for Reference {
+    fn write(&self, b: &mut CodeBuffer) {
+        b.push('&');
+        match self.lifetime {
+            Lifetime::None => {}
+            Lifetime::Static => b.write("'static "),
+            Lifetime::Named(c) => {
+                b.push('\'');
+                b.push(c);
+                b.push(' ');
+            }
+        }
+        if self.mutable {
+            b.write("mut ");
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -93,23 +111,5 @@ mod tests {
     fn mut_with_lifetime() {
         let r = Reference::default().with_mut().with_lifetime('a').unwrap();
         assert_eq!(r.to_code(), "&'a mut ");
-    }
-}
-
-impl Expression for Reference {
-    fn write(&self, b: &mut CodeBuffer) {
-        b.push('&');
-        match self.lifetime {
-            Lifetime::None => {}
-            Lifetime::Static => b.write("'static "),
-            Lifetime::Named(c) => {
-                b.push('\'');
-                b.push(c);
-                b.push(' ');
-            }
-        }
-        if self.mutable {
-            b.write("mut ");
-        }
     }
 }

@@ -116,6 +116,27 @@ impl WithStatements for Function {
     }
 }
 
+impl Statement for Function {
+    fn write(&self, b: &mut CodeBuffer, level: usize) {
+        self.write_comments(OuterLineDoc, b, level);
+        self.write_attributes(b, level);
+        b.indent(level);
+        self.write_access(b);
+        if self.is_async {
+            b.write("async ");
+        }
+        if self.is_const {
+            b.write("const ");
+        }
+        self.signature.write_unsafe(b);
+        b.write("fn ");
+        self.write_signature(b);
+        b.space();
+        self.write_curly_statement_block(b, level);
+        b.end_line();
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -171,26 +192,5 @@ mod tests {
     fn function_with_attribute() {
         let f = Function::from("test_it").with_attribute("test");
         assert_eq!(f.to_code(), "#[test]\nfn test_it() {}\n");
-    }
-}
-
-impl Statement for Function {
-    fn write(&self, b: &mut CodeBuffer, level: usize) {
-        self.write_comments(OuterLineDoc, b, level);
-        self.write_attributes(b, level);
-        b.indent(level);
-        self.write_access(b);
-        if self.is_async {
-            b.write("async ");
-        }
-        if self.is_const {
-            b.write("const ");
-        }
-        self.signature.write_unsafe(b);
-        b.write("fn ");
-        self.write_signature(b);
-        b.space();
-        self.write_curly_statement_block(b, level);
-        b.end_line();
     }
 }

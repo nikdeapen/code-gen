@@ -93,6 +93,24 @@ impl WithResult for Signature {
     }
 }
 
+impl Expression for Signature {
+    fn write(&self, b: &mut CodeBuffer) {
+        self.write_name(b);
+        self.write_generic_brackets(b);
+        b.push('(');
+        if let Some(receiver) = self.receiver {
+            receiver.write(b);
+            if !self.params.is_empty() {
+                b.write(", ");
+            }
+        }
+        self.write_params(b);
+        b.push(')');
+        self.write_result(b);
+        self.write_generic_where(b);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -131,23 +149,5 @@ mod tests {
             .with_param(("value", "T"))
             .with_result(RustType::from("String"));
         assert_eq!(s.to_code(), "foo<T>(value: T) -> String where T: Display");
-    }
-}
-
-impl Expression for Signature {
-    fn write(&self, b: &mut CodeBuffer) {
-        self.write_name(b);
-        self.write_generic_brackets(b);
-        b.push('(');
-        if let Some(receiver) = self.receiver {
-            receiver.write(b);
-            if !self.params.is_empty() {
-                b.write(", ");
-            }
-        }
-        self.write_params(b);
-        b.push(')');
-        self.write_result(b);
-        self.write_generic_where(b);
     }
 }

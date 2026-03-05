@@ -107,6 +107,26 @@ impl Enum {
     }
 }
 
+impl Statement for Enum {
+    fn write(&self, b: &mut CodeBuffer, level: usize) {
+        self.write_comments(OuterLineDoc, b, level);
+        self.write_derives(b, level);
+        b.indent(level);
+        self.write_access(b);
+        b.write("enum ");
+        self.write_name(b);
+        b.write(" {");
+        if self.cases.is_empty() {
+            b.push('}');
+            b.end_line();
+        } else {
+            b.end_line();
+            self.write_cases(b, level + 1);
+            b.line(level, "}");
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -145,25 +165,5 @@ mod tests {
             EnumCase::from("Int").with_fields(EnumFields::Unnamed(vec![RustType::from("i64")])),
         );
         assert_eq!(e.to_code(), "enum Value {\n    Int(i64),\n}\n");
-    }
-}
-
-impl Statement for Enum {
-    fn write(&self, b: &mut CodeBuffer, level: usize) {
-        self.write_comments(OuterLineDoc, b, level);
-        self.write_derives(b, level);
-        b.indent(level);
-        self.write_access(b);
-        b.write("enum ");
-        self.write_name(b);
-        b.write(" {");
-        if self.cases.is_empty() {
-            b.push('}');
-            b.end_line();
-        } else {
-            b.end_line();
-            self.write_cases(b, level + 1);
-            b.line(level, "}");
-        }
     }
 }

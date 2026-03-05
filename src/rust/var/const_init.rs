@@ -52,6 +52,20 @@ impl WithVar for ConstInit {
     }
 }
 
+impl Statement for ConstInit {
+    fn write(&self, b: &mut CodeBuffer, level: usize) {
+        self.write_comments(CommentType::OuterLineDoc, b, level);
+        b.indent(level);
+        self.write_access(b);
+        b.write("const ");
+        self.write_var(b);
+        b.write(" = ");
+        self.expression.write(b);
+        b.push(';');
+        b.end_line();
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -78,19 +92,5 @@ mod tests {
             c.to_code(),
             "///The maximum value.\nconst MAX: u32 = 100;\n"
         );
-    }
-}
-
-impl Statement for ConstInit {
-    fn write(&self, b: &mut CodeBuffer, level: usize) {
-        self.write_comments(CommentType::OuterLineDoc, b, level);
-        b.indent(level);
-        self.write_access(b);
-        b.write("const ");
-        self.write_var(b);
-        b.write(" = ");
-        self.expression.write(b);
-        b.push(';');
-        b.end_line();
     }
 }

@@ -144,6 +144,12 @@ impl Expression for RustType {
     }
 }
 
+impl Display for RustType {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.write_str(&self.to_code())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -230,11 +236,5 @@ mod tests {
     fn display_matches_to_code() {
         let t = RustType::from("Vec").with_generic(RustType::from("String"));
         assert_eq!(format!("{t}"), t.to_code());
-    }
-}
-
-impl Display for RustType {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.write_str(&self.to_code())
     }
 }

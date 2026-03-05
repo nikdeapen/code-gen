@@ -74,6 +74,29 @@ impl MatchStatement {
     }
 }
 
+impl Statement for MatchStatement {
+    fn write(&self, b: &mut CodeBuffer, level: usize) {
+        b.indent(level);
+        if let Some(assignment) = &self.assignment {
+            b.write("let ");
+            assignment.write(b);
+            b.write(" = ");
+        }
+        b.write("match ");
+        self.expression.write(b);
+        b.write(" {");
+        b.end_line();
+        for match_case in &self.match_cases {
+            match_case.write(b, level + 1);
+        }
+        if self.assignment.is_some() {
+            b.line(level, "};");
+        } else {
+            b.line(level, "}");
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -99,28 +122,5 @@ mod tests {
             s.to_code(),
             "let result: u32 = match x {\n    _ => {\n        0;\n    }\n};\n"
         );
-    }
-}
-
-impl Statement for MatchStatement {
-    fn write(&self, b: &mut CodeBuffer, level: usize) {
-        b.indent(level);
-        if let Some(assignment) = &self.assignment {
-            b.write("let ");
-            assignment.write(b);
-            b.write(" = ");
-        }
-        b.write("match ");
-        self.expression.write(b);
-        b.write(" {");
-        b.end_line();
-        for match_case in &self.match_cases {
-            match_case.write(b, level + 1);
-        }
-        if self.assignment.is_some() {
-            b.line(level, "};");
-        } else {
-            b.line(level, "}");
-        }
     }
 }

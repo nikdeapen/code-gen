@@ -29,6 +29,14 @@ impl WithRustType for Var {
     }
 }
 
+impl Expression for Var {
+    fn write(&self, b: &mut CodeBuffer) {
+        self.write_name(b);
+        b.write(": ");
+        self.write_rust_type(b);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -37,13 +45,5 @@ mod tests {
     fn var_expression() {
         let v = Var::from(("count", "u32"));
         assert_eq!(v.to_code(), "count: u32");
-    }
-}
-
-impl Expression for Var {
-    fn write(&self, b: &mut CodeBuffer) {
-        self.write_name(b);
-        b.write(": ");
-        self.write_rust_type(b);
     }
 }

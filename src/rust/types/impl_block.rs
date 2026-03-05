@@ -154,6 +154,33 @@ impl IsEmpty for ImplBlock {
     }
 }
 
+impl Statement for ImplBlock {
+    fn write(&self, b: &mut CodeBuffer, level: usize) {
+        b.indent(level);
+        b.write("impl");
+        self.write_generic_brackets(b);
+        b.space();
+        if let Some(for_trait) = self.for_trait() {
+            for_trait.write(b);
+            b.write(" for ");
+        }
+        self.structure.write(b);
+        b.write(" {");
+        if self.is_empty() {
+            b.push('}');
+            b.end_line();
+        } else {
+            b.end_line();
+            self.write_comments(CommentType::InnerLineDoc, b, level + 1);
+            EmptyLine::default().write(b, level);
+            self.write_type_decs(b, level + 1);
+            self.write_constants(b, level + 1);
+            self.write_functions(b, level + 1);
+            b.line(level, "}");
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -204,32 +231,5 @@ mod tests {
         let i = ImplBlock::from(RustType::from("Wrapper").with_generic(RustType::from("T")))
             .with_generic(Var::from(("T", "Clone")));
         assert_eq!(i.to_code(), "impl<T: Clone> Wrapper<T> {}\n");
-    }
-}
-
-impl Statement for ImplBlock {
-    fn write(&self, b: &mut CodeBuffer, level: usize) {
-        b.indent(level);
-        b.write("impl");
-        self.write_generic_brackets(b);
-        b.space();
-        if let Some(for_trait) = self.for_trait() {
-            for_trait.write(b);
-            b.write(" for ");
-        }
-        self.structure.write(b);
-        b.write(" {");
-        if self.is_empty() {
-            b.push('}');
-            b.end_line();
-        } else {
-            b.end_line();
-            self.write_comments(CommentType::InnerLineDoc, b, level + 1);
-            EmptyLine::default().write(b, level);
-            self.write_type_decs(b, level + 1);
-            self.write_constants(b, level + 1);
-            self.write_functions(b, level + 1);
-            b.line(level, "}");
-        }
     }
 }
