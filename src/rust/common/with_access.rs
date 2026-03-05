@@ -12,6 +12,7 @@ pub trait WithAccess: Sized {
         A: Into<Access>;
 
     /// Sets the `access` level.
+    #[must_use]
     fn with_access<A>(mut self, access: A) -> Self
     where
         A: Into<Access>,

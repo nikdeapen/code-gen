@@ -12,6 +12,7 @@ pub trait WithResult: Sized {
         T: Into<RustType>;
 
     /// Sets the `result`.
+    #[must_use]
     fn with_result<T>(mut self, result: T) -> Self
     where
         T: Into<RustType>,

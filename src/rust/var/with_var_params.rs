@@ -12,6 +12,7 @@ pub trait WithVarParams: Sized {
         V: Into<Var>;
 
     /// Adds the parameter.
+    #[must_use]
     fn with_param<V>(mut self, param: V) -> Self
     where
         V: Into<Var>,

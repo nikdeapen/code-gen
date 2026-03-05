@@ -47,6 +47,7 @@ impl MatchStatement {
     }
 
     /// Sets the variable name `assignment`.
+    #[must_use]
     pub fn with_assignment<V>(mut self, assignment: V) -> Self
     where
         V: Into<Var>,
@@ -65,6 +66,7 @@ impl MatchStatement {
     }
 
     /// Adds the match `case`.
+    #[must_use]
     pub fn with_match_case(mut self, case: MatchCase) -> Self {
         self.add_match_case(case);
         self

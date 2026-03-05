@@ -29,7 +29,7 @@ impl Statement for VarInit {
         self.write_var(b);
         b.write(" = ");
         self.expression.write(b);
-        b.write(";");
+        b.push(';');
         b.end_line();
     }
 }

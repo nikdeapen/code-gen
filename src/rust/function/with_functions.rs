@@ -12,6 +12,7 @@ pub trait WithFunctions: Sized {
         F: Into<Function>;
 
     /// Adds the `function`.
+    #[must_use]
     fn with_function<F>(mut self, function: F) -> Self
     where
         F: Into<Function>,

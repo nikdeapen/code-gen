@@ -115,7 +115,7 @@ impl Statement for Trait {
         self.write_name(b);
         b.write(" {");
         if self.is_empty() {
-            b.write("}");
+            b.push('}');
             b.end_line();
         } else {
             b.end_line();

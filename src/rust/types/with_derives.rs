@@ -10,6 +10,7 @@ pub trait WithDerives: Sized {
         S: Into<String>;
 
     /// Adds the derivation.
+    #[must_use]
     fn with_derive<S>(mut self, derive: S) -> Self
     where
         S: Into<String>,

@@ -9,6 +9,7 @@ pub trait WithUnsafeFlag: Sized {
     fn set_unsafe(&mut self);
 
     /// Sets the unsafe flag.
+    #[must_use]
     fn with_unsafe(mut self) -> Self {
         self.set_unsafe();
         self

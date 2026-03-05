@@ -1,18 +1,18 @@
-use crate::{CodeBuffer, Expression, Literal, Source, Statement, WithStatements};
+use crate::{Block, CodeBuffer, Expression, Literal, Statement, WithStatements};
 
 /// An `if` statement with an optional `else` clause.
 pub struct IfStatement {
     condition: Box<dyn Expression>,
-    success_statements: Source,
-    else_statements: Source,
+    success_statements: Block,
+    else_statements: Block,
 }
 
 impl<E: 'static + Expression> From<E> for IfStatement {
     fn from(expression: E) -> Self {
         Self {
             condition: Box::new(expression),
-            success_statements: Source::default(),
-            else_statements: Source::default(),
+            success_statements: Block::default(),
+            else_statements: Block::default(),
         }
     }
 }
@@ -33,22 +33,23 @@ impl IfStatement {
     //! Success
 
     /// Gets the success statements.
-    pub fn success_statements(&self) -> &Source {
+    pub fn success_statements(&self) -> &Block {
         &self.success_statements
     }
 
     /// Sets the `success` statements.
     pub fn set_success_statements<S>(&mut self, success: S)
     where
-        S: Into<Source>,
+        S: Into<Block>,
     {
         self.success_statements = success.into();
     }
 
     /// Sets the `success` statements.
+    #[must_use]
     pub fn with_success_statements<S>(mut self, success: S) -> Self
     where
-        S: Into<Source>,
+        S: Into<Block>,
     {
         self.set_success_statements(success);
         self
@@ -59,22 +60,23 @@ impl IfStatement {
     //! Else
 
     /// Gets the else statements.
-    pub fn else_statements(&self) -> &Source {
+    pub fn else_statements(&self) -> &Block {
         &self.else_statements
     }
 
     /// Sets the `else_statements`.
     pub fn set_else_statements<S>(&mut self, else_statements: S)
     where
-        S: Into<Source>,
+        S: Into<Block>,
     {
         self.else_statements = else_statements.into();
     }
 
     /// Sets the `else_statements`.
+    #[must_use]
     pub fn with_else_statements<S>(mut self, else_statements: S) -> Self
     where
-        S: Into<Source>,
+        S: Into<Block>,
     {
         self.set_else_statements(else_statements);
         self

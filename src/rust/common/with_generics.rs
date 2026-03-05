@@ -12,6 +12,7 @@ pub trait WithGenerics: Sized {
         V: Into<Var>;
 
     /// Adds the `generic` type parameter.
+    #[must_use]
     fn with_generic<V>(mut self, generic: V) -> Self
     where
         V: Into<Var>,
@@ -22,7 +23,7 @@ pub trait WithGenerics: Sized {
 
     /// Writes the generic brackets. (ex: `<A: TypeA, B: TypeB>`)
     fn write_generic_brackets(&self, b: &mut CodeBuffer) {
-        b.write("<");
+        b.push('<');
         if let Some((first, rest)) = self.generics().split_first() {
             first.write(b);
             for generic in rest {
@@ -30,6 +31,6 @@ pub trait WithGenerics: Sized {
                 generic.write(b);
             }
         }
-        b.write(">");
+        b.push('>');
     }
 }

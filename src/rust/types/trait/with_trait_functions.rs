@@ -12,6 +12,7 @@ pub trait WithTraitFunctions: Sized {
         S: Into<SignatureDec>;
 
     /// Adds the function `signature` declaration.
+    #[must_use]
     fn with_signature_dec<S>(mut self, signature: S) -> Self
     where
         S: Into<SignatureDec>,

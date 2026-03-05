@@ -27,13 +27,13 @@ impl Expression for EnumFields {
             }
             Self::Unnamed(tags) => {
                 if let Some((first, rest)) = tags.split_first() {
-                    b.write("(");
+                    b.push('(');
                     first.write(b);
                     for var in rest {
                         b.write(", ");
                         var.write(b);
                     }
-                    b.write(")");
+                    b.push(')');
                 }
             }
         }

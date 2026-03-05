@@ -77,6 +77,7 @@ impl Function {
     }
 
     /// Sets the `is_async` flag.
+    #[must_use]
     pub fn with_async(mut self, is_async: bool) -> Self {
         self.set_async(is_async);
         self
@@ -92,6 +93,7 @@ impl Function {
     }
 
     /// Sets the `is_const` flag.
+    #[must_use]
     pub fn with_const(mut self, is_const: bool) -> Self {
         self.set_const(is_const);
         self

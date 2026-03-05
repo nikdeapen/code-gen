@@ -69,7 +69,7 @@ impl Statement for StructField {
         b.indent(level);
         self.write_access(b);
         self.write_var(b);
-        b.write(",");
+        b.push(',');
         b.end_line();
     }
 }

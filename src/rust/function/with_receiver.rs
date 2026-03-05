@@ -9,6 +9,7 @@ pub trait WithReceiver: Sized {
     fn set_receiver(&mut self, receiver: Receiver);
 
     /// Sets the function `receiver`.
+    #[must_use]
     fn with_receiver(mut self, receiver: Receiver) -> Self {
         self.set_receiver(receiver);
         self

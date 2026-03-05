@@ -85,6 +85,7 @@ impl Enum {
     }
 
     /// Adds the case.
+    #[must_use]
     pub fn with_case<C>(mut self, case: C) -> Self
     where
         C: Into<EnumCase>,
@@ -115,7 +116,7 @@ impl Statement for Enum {
         self.write_name(b);
         b.write(" {");
         if self.cases.is_empty() {
-            b.write("}");
+            b.push('}');
             b.end_line();
         } else {
             b.end_line();

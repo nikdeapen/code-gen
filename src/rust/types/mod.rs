@@ -1,5 +1,5 @@
-pub use impl_block::*;
 pub use r#enum::*;
+pub use impl_block::*;
 pub use r#struct::*;
 pub use r#trait::*;
 pub use type_dec::*;

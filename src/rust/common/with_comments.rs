@@ -1,5 +1,5 @@
-use crate::rust::CommentType;
 use crate::CodeBuffer;
+use crate::rust::CommentType;
 
 /// An element with comment lines.
 pub trait WithComments: Sized {
@@ -7,6 +7,7 @@ pub trait WithComments: Sized {
     fn comments(&self) -> &[String];
 
     /// Adds the `comment` line.
+    #[must_use]
     fn with_comment<S>(mut self, comment: S) -> Self
     where
         S: Into<String>,

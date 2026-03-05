@@ -97,7 +97,7 @@ impl Expression for Signature {
     fn write(&self, b: &mut CodeBuffer) {
         self.write_name(b);
         self.write_generic_brackets(b);
-        b.write("(");
+        b.push('(');
         if let Some(receiver) = self.receiver {
             receiver.write(b);
             if !self.params.is_empty() {
@@ -105,7 +105,7 @@ impl Expression for Signature {
             }
         }
         self.write_params(b);
-        b.write(")");
+        b.push(')');
         self.write_result(b);
         self.write_generic_where(b);
     }

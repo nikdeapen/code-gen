@@ -11,6 +11,7 @@ pub trait WithAttributes: Sized {
         S: Into<String>;
 
     /// Adds the attribute.
+    #[must_use]
     fn with_attribute<S>(mut self, attribute: S) -> Self
     where
         S: Into<String>,
@@ -25,7 +26,7 @@ pub trait WithAttributes: Sized {
             b.indent(level);
             b.write("#[");
             b.write(attribute);
-            b.write("]");
+            b.push(']');
             b.end_line();
         }
     }
