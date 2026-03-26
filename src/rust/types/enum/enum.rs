@@ -198,17 +198,16 @@ mod tests {
         let e = Enum::from("Color")
             .with_attribute("repr(u8)")
             .with_case(EnumCase::from("Red"));
-        assert_eq!(
-            e.to_code(),
-            "#[repr(u8)]\nenum Color {\n    Red,\n}\n"
-        );
+        assert_eq!(e.to_code(), "#[repr(u8)]\nenum Color {\n    Red,\n}\n");
     }
 
     #[test]
     fn enum_with_generics() {
         let e = Enum::from("Option")
             .with_generic(Var::from(("T", "Sized")))
-            .with_case(EnumCase::from("Some").with_fields(EnumFields::Unnamed(vec![RustType::from("T")])))
+            .with_case(
+                EnumCase::from("Some").with_fields(EnumFields::Unnamed(vec![RustType::from("T")])),
+            )
             .with_case(EnumCase::from("None"));
         assert_eq!(
             e.to_code(),
