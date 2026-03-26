@@ -33,8 +33,8 @@ impl WithUnsafeFlag for Signature {
         self.is_unsafe
     }
 
-    fn set_unsafe(&mut self) {
-        self.is_unsafe = true;
+    fn set_unsafe(&mut self, is_unsafe: bool) {
+        self.is_unsafe = is_unsafe;
     }
 }
 

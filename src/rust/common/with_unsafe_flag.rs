@@ -6,12 +6,12 @@ pub trait WithUnsafeFlag: Sized {
     fn is_unsafe(&self) -> bool;
 
     /// Sets the unsafe flag.
-    fn set_unsafe(&mut self);
+    fn set_unsafe(&mut self, is_unsafe: bool);
 
     /// Sets the unsafe flag.
     #[must_use]
-    fn with_unsafe(mut self) -> Self {
-        self.set_unsafe();
+    fn with_unsafe(mut self, is_unsafe: bool) -> Self {
+        self.set_unsafe(is_unsafe);
         self
     }
 
