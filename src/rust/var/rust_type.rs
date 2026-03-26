@@ -146,7 +146,43 @@ impl Expression for RustType {
 
 impl Display for RustType {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.write_str(&self.to_code())
+        match self {
+            Primitive(primitive) => f.write_str(primitive.name()),
+            Named(name) => f.write_str(name.as_str()),
+            Ref { reference, base } => {
+                Display::fmt(reference, f)?;
+                Display::fmt(base, f)
+            }
+            Tuple(members) => {
+                f.write_str("(")?;
+                if let Some((first, rest)) = members.split_first() {
+                    Display::fmt(first, f)?;
+                    for member in rest {
+                        f.write_str(", ")?;
+                        Display::fmt(member, f)?;
+                    }
+                }
+                f.write_str(")")
+            }
+            Slice(base) => {
+                f.write_str("[")?;
+                Display::fmt(base, f)?;
+                f.write_str("]")
+            }
+            Generic { base, generics } => {
+                Display::fmt(base, f)?;
+                if let Some((first, rest)) = generics.split_first() {
+                    f.write_str("<")?;
+                    Display::fmt(first, f)?;
+                    for generic in rest {
+                        f.write_str(", ")?;
+                        Display::fmt(generic, f)?;
+                    }
+                    f.write_str(">")?;
+                }
+                Ok(())
+            }
+        }
     }
 }
 

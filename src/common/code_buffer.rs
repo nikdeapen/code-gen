@@ -12,10 +12,10 @@ impl CodeBuffer {
     //! Constants
 
     /// The default indent. (4 spaces)
-    pub const DEFAULT_INDENT: &'static str = "    ";
+    pub const DEFAULT_INDENT: &str = "    ";
 
     /// The default line-ending.
-    pub const DEFAULT_LINE_ENDING: &'static str = "\n";
+    pub const DEFAULT_LINE_ENDING: &str = "\n";
 
     /// The default buffer capacity. (4 KiB)
     pub const DEFAULT_CAPACITY: usize = 4 * 1024;

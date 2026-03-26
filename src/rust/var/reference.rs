@@ -1,3 +1,5 @@
+use std::fmt::{Display, Formatter};
+
 use crate::{CodeBuffer, Expression};
 
 /// A reference lifetime.
@@ -51,6 +53,23 @@ impl Reference {
             mutable: self.mutable,
             lifetime: Lifetime::Static,
         }
+    }
+}
+
+impl Display for Reference {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.write_str("&")?;
+        match self.lifetime {
+            Lifetime::None => {}
+            Lifetime::Static => f.write_str("'static ")?,
+            Lifetime::Named(c) => {
+                write!(f, "'{c} ")?;
+            }
+        }
+        if self.mutable {
+            f.write_str("mut ")?;
+        }
+        Ok(())
     }
 }
 
