@@ -1,9 +1,9 @@
 use crate::rust::CommentType::OuterLineDoc;
 use crate::rust::{
-    Access, Function, SignatureDec, WithAccess, WithAttributes, WithComments, WithFunctions,
-    WithTraitFunctions,
+    Access, Function, RustType, SignatureDec, WithAccess, WithAttributes, WithComments,
+    WithFunctions, WithTraitFunctions,
 };
-use crate::{CodeBuffer, IsEmpty, Statement, WithName};
+use crate::{CodeBuffer, Expression, IsEmpty, Statement, WithName};
 
 /// A trait declaration.
 pub struct Trait {
@@ -11,6 +11,7 @@ pub struct Trait {
     attributes: Vec<String>,
     access: Access,
     name: String,
+    supertraits: Vec<RustType>,
     signature_decs: Vec<SignatureDec>,
     functions: Vec<Function>,
 }
@@ -22,6 +23,7 @@ impl<S: Into<String>> From<S> for Trait {
             attributes: Vec::default(),
             access: Access::default(),
             name: name.into(),
+            supertraits: Vec::default(),
             signature_decs: Vec::default(),
             functions: Vec::default(),
         }
@@ -73,6 +75,46 @@ impl WithName for Trait {
     }
 }
 
+impl Trait {
+    //! Supertraits
+
+    /// Gets the supertraits.
+    #[must_use]
+    pub fn supertraits(&self) -> &[RustType] {
+        self.supertraits.as_slice()
+    }
+
+    /// Adds the supertrait.
+    pub fn add_supertrait<T>(&mut self, supertrait: T)
+    where
+        T: Into<RustType>,
+    {
+        self.supertraits.push(supertrait.into());
+    }
+
+    /// Adds the supertrait.
+    #[must_use]
+    pub fn with_supertrait<T>(mut self, supertrait: T) -> Self
+    where
+        T: Into<RustType>,
+    {
+        self.add_supertrait(supertrait);
+        self
+    }
+
+    /// Writes the supertraits. (ex: `: Send + Sync`)
+    fn write_supertraits(&self, b: &mut CodeBuffer) {
+        if let Some((first, rest)) = self.supertraits.split_first() {
+            b.write(": ");
+            first.write(b);
+            for supertrait in rest {
+                b.write(" + ");
+                supertrait.write(b);
+            }
+        }
+    }
+}
+
 impl WithTraitFunctions for Trait {
     fn signature_decs(&self) -> &[SignatureDec] {
         self.signature_decs.as_slice()
@@ -113,6 +155,7 @@ impl Statement for Trait {
         self.write_access(b);
         b.write("trait ");
         self.write_name(b);
+        self.write_supertraits(b);
         b.write(" {");
         if self.is_empty() {
             b.push('}');
@@ -142,6 +185,21 @@ mod tests {
     fn empty_trait() {
         let t = Trait::from("Foo");
         assert_eq!(t.to_code(), "trait Foo {}\n");
+    }
+
+    #[test]
+    fn trait_with_supertrait() {
+        let t = Trait::from("Foo").with_supertrait("Clone");
+        assert_eq!(t.to_code(), "trait Foo: Clone {}\n");
+    }
+
+    #[test]
+    fn trait_with_supertraits() {
+        let t = Trait::from("Foo")
+            .with_access(Access::Public)
+            .with_supertrait("Send")
+            .with_supertrait("Sync");
+        assert_eq!(t.to_code(), "pub trait Foo: Send + Sync {}\n");
     }
 
     #[test]
