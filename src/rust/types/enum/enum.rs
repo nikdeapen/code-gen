@@ -181,7 +181,7 @@ mod tests {
             .with_case(EnumCase::from("Blue"));
         assert_eq!(
             e.to_code(),
-            "pub enum Color {\n    Red,\n    \n    Green,\n    \n    Blue,\n}\n"
+            "pub enum Color {\n    Red,\n\n    Green,\n\n    Blue,\n}\n"
         );
     }
 
@@ -211,7 +211,7 @@ mod tests {
             .with_case(EnumCase::from("None"));
         assert_eq!(
             e.to_code(),
-            "enum Option<T: Sized> {\n    Some(T),\n    \n    None,\n}\n"
+            "enum Option<T: Sized> {\n    Some(T),\n\n    None,\n}\n"
         );
     }
 
