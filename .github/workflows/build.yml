@@ -4,7 +4,7 @@ on:
 env:
   CARGO_TERM_COLOR: always
 jobs:
-  build:
+  features:
     name: Build (${{ matrix.features }})
     runs-on: ubuntu-latest
     strategy:
@@ -26,3 +26,11 @@ jobs:
         run: cargo fmt --all -- --check
       - name: Lint
         run: cargo clippy --all-targets --features "${{ matrix.features }}" -- -D warnings
+  build:
+    name: Build
+    if: always()
+    needs: features
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check the feature builds
+        run: test "${{ needs.features.result }}" = "success"
