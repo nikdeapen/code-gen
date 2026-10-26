@@ -1,4 +1,4 @@
-use crate::rust::RustType::{Generic, Named, Primitive, Ref, Slice, Tuple};
+use crate::rust::RustType::{Binding, Generic, Impl, Named, Primitive, Ref, Slice, Tuple};
 use crate::rust::{Reference, RustPrimitive};
 use crate::{CodeBuffer, Expression, WithName};
 use std::fmt::{Display, Formatter};
@@ -29,6 +29,12 @@ pub enum RustType {
         base: Box<RustType>,
         generics: Vec<RustType>,
     },
+
+    /// An `impl` trait type with its bounds. (ex: `impl Iterator<Item = u8> + Send`)
+    Impl(Vec<RustType>),
+
+    /// An associated type binding. (ex: the `Item = u8` of `Iterator<Item = u8>`)
+    Binding { name: String, base: Box<RustType> },
 }
 
 impl From<RustPrimitive> for RustType {
@@ -103,6 +109,47 @@ impl RustType {
     }
 }
 
+impl RustType {
+    //! Impl Types
+
+    /// Converts the type to an `impl` trait type with itself as the bound.
+    #[must_use]
+    pub fn to_impl(self) -> Self {
+        Impl(vec![self])
+    }
+
+    /// Adds the trait `bound`, converting the type to an `impl` trait type of itself if needed.
+    #[must_use]
+    pub fn with_bound<T>(self, bound: T) -> Self
+    where
+        T: Into<RustType>,
+    {
+        match self {
+            Impl(mut bounds) => {
+                bounds.push(bound.into());
+                Impl(bounds)
+            }
+            base => Impl(vec![base, bound.into()]),
+        }
+    }
+}
+
+impl RustType {
+    //! Associated Type Bindings
+
+    /// Converts the type to an associated type binding of itself with the `name`.
+    #[must_use]
+    pub fn to_binding<S>(self, name: S) -> Self
+    where
+        S: Into<String>,
+    {
+        Binding {
+            name: name.into(),
+            base: Box::new(self),
+        }
+    }
+}
+
 impl Expression for RustType {
     fn write(&self, b: &mut CodeBuffer) {
         match self {
@@ -139,6 +186,21 @@ impl Expression for RustType {
                     }
                     b.push('>');
                 }
+            }
+            Impl(bounds) => {
+                b.write("impl ");
+                if let Some((first, rest)) = bounds.split_first() {
+                    first.write(b);
+                    for bound in rest {
+                        b.write(" + ");
+                        bound.write(b);
+                    }
+                }
+            }
+            Binding { name, base } => {
+                b.write(name.as_str());
+                b.write(" = ");
+                base.write(b);
             }
         }
     }
@@ -181,6 +243,22 @@ impl Display for RustType {
                     f.write_str(">")?;
                 }
                 Ok(())
+            }
+            Impl(bounds) => {
+                f.write_str("impl ")?;
+                if let Some((first, rest)) = bounds.split_first() {
+                    Display::fmt(first, f)?;
+                    for bound in rest {
+                        f.write_str(" + ")?;
+                        Display::fmt(bound, f)?;
+                    }
+                }
+                Ok(())
+            }
+            Binding { name, base } => {
+                f.write_str(name.as_str())?;
+                f.write_str(" = ")?;
+                Display::fmt(base, f)
             }
         }
     }
@@ -266,6 +344,51 @@ mod tests {
             RustType::from(RustPrimitive::UnsignedInt32),
         ]);
         assert_eq!(t.to_code(), "(String, u32)");
+    }
+
+    #[test]
+    fn impl_type() {
+        let t = RustType::from("Send").to_impl();
+        assert_eq!(t.to_code(), "impl Send");
+    }
+
+    #[test]
+    fn impl_type_with_bounds() {
+        let t = RustType::from("Future")
+            .to_impl()
+            .with_bound("Send")
+            .with_bound("'_");
+        assert_eq!(t.to_code(), "impl Future + Send + '_");
+    }
+
+    #[test]
+    fn with_bound_converts_to_impl_type() {
+        let t = RustType::from("Clone").with_bound("Send");
+        assert_eq!(t.to_code(), "impl Clone + Send");
+    }
+
+    #[test]
+    fn binding_type() {
+        let t = RustType::from(RustPrimitive::UnsignedInt8).to_binding("Item");
+        assert_eq!(t.to_code(), "Item = u8");
+    }
+
+    #[test]
+    fn impl_type_with_binding() {
+        let t = RustType::from("Iterator")
+            .with_generic(RustType::from(RustPrimitive::UnsignedInt8).to_binding("Item"))
+            .to_impl()
+            .with_bound("Send");
+        assert_eq!(t.to_code(), "impl Iterator<Item = u8> + Send");
+    }
+
+    #[test]
+    fn display_matches_to_code_for_impl_types() {
+        let t = RustType::from("Iterator")
+            .with_generic(RustType::from("String").to_binding("Item"))
+            .to_impl()
+            .with_bound("'_");
+        assert_eq!(format!("{t}"), t.to_code());
     }
 
     #[test]
