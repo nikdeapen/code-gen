@@ -1,27 +1,27 @@
-use crate::rust::Var;
+use crate::rust::Generic;
 use crate::{CodeBuffer, Expression};
 
-/// An element with generic type parameters. Writes `<Name: Type, ...>` in brackets.
+/// An element with generic parameters. Writes `<Name: Bounds, ...>` in brackets.
 pub trait WithGenerics: Sized {
-    /// Gets the generic type parameters.
-    fn generics(&self) -> &[Var];
+    /// Gets the generic parameters.
+    fn generics(&self) -> &[Generic];
 
-    /// Adds the `generic` type parameter.
-    fn add_generic<V>(&mut self, generic: V)
+    /// Adds the `generic` parameter.
+    fn add_generic<G>(&mut self, generic: G)
     where
-        V: Into<Var>;
+        G: Into<Generic>;
 
-    /// Adds the `generic` type parameter.
+    /// Adds the `generic` parameter.
     #[must_use]
-    fn with_generic<V>(mut self, generic: V) -> Self
+    fn with_generic<G>(mut self, generic: G) -> Self
     where
-        V: Into<Var>,
+        G: Into<Generic>,
     {
         self.add_generic(generic);
         self
     }
 
-    /// Writes the generic brackets. (ex: `<A: TypeA, B: TypeB>`)
+    /// Writes the generic brackets. (ex: `<'a, T: Clone>`)
     fn write_generic_brackets(&self, b: &mut CodeBuffer) {
         if let Some((first, rest)) = self.generics().split_first() {
             b.push('<');

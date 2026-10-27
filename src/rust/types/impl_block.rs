@@ -1,12 +1,12 @@
 use crate::rust::{
-    CommentType, ConstInit, Function, RustType, TypeDec, Var, WithComments, WithFunctions,
+    CommentType, ConstInit, Function, Generic, RustType, TypeDec, WithComments, WithFunctions,
     WithGenerics, WithRustType, WithTypeDecs,
 };
 use crate::{CodeBuffer, EmptyLine, Expression, IsEmpty, Statement};
 
 /// An impl block.
 pub struct ImplBlock {
-    generics: Vec<Var>,
+    generics: Vec<Generic>,
     structure: RustType,
     for_trait: Option<RustType>,
     comments: Vec<String>,
@@ -30,13 +30,13 @@ impl<T: Into<RustType>> From<T> for ImplBlock {
 }
 
 impl WithGenerics for ImplBlock {
-    fn generics(&self) -> &[Var] {
+    fn generics(&self) -> &[Generic] {
         self.generics.as_slice()
     }
 
-    fn add_generic<V>(&mut self, generic: V)
+    fn add_generic<G>(&mut self, generic: G)
     where
-        V: Into<Var>,
+        G: Into<Generic>,
     {
         self.generics.push(generic.into());
     }
@@ -231,5 +231,12 @@ mod tests {
         let i = ImplBlock::from(RustType::from("Wrapper").with_generic(RustType::from("T")))
             .with_generic(Var::from(("T", "Clone")));
         assert_eq!(i.to_code(), "impl<T: Clone> Wrapper<T> {}\n");
+    }
+
+    #[test]
+    fn impl_with_a_lifetime() {
+        let i = ImplBlock::from(RustType::from("Ref").with_generic(RustType::from("'a")))
+            .with_generic("'a");
+        assert_eq!(i.to_code(), "impl<'a> Ref<'a> {}\n");
     }
 }

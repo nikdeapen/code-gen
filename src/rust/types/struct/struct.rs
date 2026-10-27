@@ -1,6 +1,6 @@
 use crate::rust::{
-    Access, CommentType, StructField, Var, WithAccess, WithAttributes, WithComments, WithDerives,
-    WithGenerics, WithStructFields,
+    Access, CommentType, Generic, StructField, WithAccess, WithAttributes, WithComments,
+    WithDerives, WithGenerics, WithStructFields,
 };
 use crate::{CodeBuffer, Statement, WithName};
 
@@ -12,7 +12,7 @@ pub struct Struct {
     attributes: Vec<String>,
     access: Access,
     name: String,
-    generics: Vec<Var>,
+    generics: Vec<Generic>,
     fields: Vec<StructField>,
 }
 
@@ -89,13 +89,13 @@ impl WithName for Struct {
 }
 
 impl WithGenerics for Struct {
-    fn generics(&self) -> &[Var] {
+    fn generics(&self) -> &[Generic] {
         self.generics.as_slice()
     }
 
-    fn add_generic<V>(&mut self, generic: V)
+    fn add_generic<G>(&mut self, generic: G)
     where
-        V: Into<Var>,
+        G: Into<Generic>,
     {
         self.generics.push(generic.into());
     }
@@ -139,7 +139,7 @@ impl Statement for Struct {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::rust::WithComments;
+    use crate::rust::{Var, WithComments};
 
     #[test]
     fn empty_struct() {
@@ -176,6 +176,14 @@ mod tests {
             s.to_code(),
             "struct Wrapper<T: Clone> {\n    value: T,\n}\n"
         );
+    }
+
+    #[test]
+    fn struct_with_a_lifetime() {
+        let s = Struct::from("Ref")
+            .with_generic("'a")
+            .with_field(StructField::from(("bytes", "&'a [u8]")));
+        assert_eq!(s.to_code(), "struct Ref<'a> {\n    bytes: &'a [u8],\n}\n");
     }
 
     #[test]
