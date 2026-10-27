@@ -1,9 +1,10 @@
-use crate::rust::{CommentType, EnumFields, WithComments};
+use crate::rust::{CommentType, EnumFields, WithAttributes, WithComments};
 use crate::{CodeBuffer, Expression, Statement, WithName};
 
 /// An enum case.
 pub struct EnumCase {
     comments: Vec<String>,
+    attributes: Vec<String>,
     name: String,
     fields: EnumFields,
 }
@@ -12,6 +13,7 @@ impl<S: Into<String>> From<S> for EnumCase {
     fn from(name: S) -> Self {
         Self {
             comments: Vec::default(),
+            attributes: Vec::default(),
             name: name.into(),
             fields: EnumFields::default(),
         }
@@ -28,6 +30,19 @@ impl WithComments for EnumCase {
         S: Into<String>,
     {
         self.comments.push(comment.into());
+    }
+}
+
+impl WithAttributes for EnumCase {
+    fn attributes(&self) -> &[String] {
+        self.attributes.as_slice()
+    }
+
+    fn add_attribute<S>(&mut self, attribute: S)
+    where
+        S: Into<String>,
+    {
+        self.attributes.push(attribute.into());
     }
 }
 
@@ -68,6 +83,7 @@ impl EnumCase {
 impl Statement for EnumCase {
     fn write(&self, b: &mut CodeBuffer, level: usize) {
         self.write_comments(CommentType::OuterLineDoc, b, level);
+        self.write_attributes(b, level);
         b.indent(level);
         self.write_name(b);
         self.fields.write(b);
