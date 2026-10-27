@@ -8,7 +8,7 @@ file I/O, or formatting.
 
 ## Dependencies & Features
 
-    code-gen = "0.11.1"
+    code-gen = "0.11.2"
 
 This crate has no dependencies.
 
