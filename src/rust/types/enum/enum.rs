@@ -202,6 +202,19 @@ mod tests {
     }
 
     #[test]
+    fn enum_with_case_attributes() {
+        let e = Enum::from("Kind").with_case(
+            EnumCase::from("Self_")
+                .with_comment(" The case.")
+                .with_attribute("serde(rename = \"Self\")"),
+        );
+        assert_eq!(
+            e.to_code(),
+            "enum Kind {\n    /// The case.\n    #[serde(rename = \"Self\")]\n    Self_,\n}\n"
+        );
+    }
+
+    #[test]
     fn enum_with_generics() {
         let e = Enum::from("Option")
             .with_generic(Var::from(("T", "Sized")))
