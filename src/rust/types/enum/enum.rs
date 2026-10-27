@@ -1,6 +1,6 @@
 use crate::rust::CommentType::OuterLineDoc;
 use crate::rust::{
-    Access, EnumCase, Var, WithAccess, WithAttributes, WithComments, WithDerives, WithGenerics,
+    Access, EnumCase, Generic, WithAccess, WithAttributes, WithComments, WithDerives, WithGenerics,
 };
 use crate::{CodeBuffer, EmptyLine, Statement, WithName};
 
@@ -11,7 +11,7 @@ pub struct Enum {
     attributes: Vec<String>,
     access: Access,
     name: String,
-    generics: Vec<Var>,
+    generics: Vec<Generic>,
     cases: Vec<EnumCase>,
 }
 
@@ -88,13 +88,13 @@ impl WithName for Enum {
 }
 
 impl WithGenerics for Enum {
-    fn generics(&self) -> &[Var] {
+    fn generics(&self) -> &[Generic] {
         self.generics.as_slice()
     }
 
-    fn add_generic<V>(&mut self, generic: V)
+    fn add_generic<G>(&mut self, generic: G)
     where
-        V: Into<Var>,
+        G: Into<Generic>,
     {
         self.generics.push(generic.into());
     }
