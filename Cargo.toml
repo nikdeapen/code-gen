@@ -13,6 +13,7 @@ license = "MIT"
 c = []
 cpp = []
 csharp = []
+go = []
 java = []
 kotlin = []
 python = []

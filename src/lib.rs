@@ -14,6 +14,8 @@ pub mod c;
 pub mod cpp;
 #[cfg(feature = "csharp")]
 pub mod csharp;
+#[cfg(feature = "go")]
+pub mod go;
 #[cfg(feature = "java")]
 pub mod java;
 #[cfg(feature = "kotlin")]
