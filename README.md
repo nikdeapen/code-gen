@@ -17,6 +17,7 @@ This crate has no dependencies.
     c             # support for the C programming language
     cpp           # support for the C++ programming language
     java          # support for the Java programming language
+    kotlin        # support for the Kotlin programming language
     python        # support for the Python programming language
     rust          # support for the Rust programming language
     typescript    # support for the TypeScript & JavaScript programming languages

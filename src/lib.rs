@@ -14,6 +14,8 @@ pub mod c;
 pub mod cpp;
 #[cfg(feature = "java")]
 pub mod java;
+#[cfg(feature = "kotlin")]
+pub mod kotlin;
 #[cfg(feature = "python")]
 pub mod python;
 #[cfg(feature = "rust")]

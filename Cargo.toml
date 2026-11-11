@@ -13,6 +13,7 @@ license = "MIT"
 c = []
 cpp = []
 java = []
+kotlin = []
 python = []
 rust = []
 typescript = []

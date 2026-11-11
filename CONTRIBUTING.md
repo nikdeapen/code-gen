@@ -37,6 +37,7 @@ cohesive. If there are many unrelated changes they should be in separate PRs.
 - `[c]`: the C code generation in `src/c/`.
 - `[cpp]`: the C++ code generation in `src/cpp/`.
 - `[java]`: the Java code generation in `src/java/`.
+- `[kotlin]`: the Kotlin code generation in `src/kotlin/`.
 - `[python]`: the Python code generation in `src/python/`.
 - `[rust]`: the Rust code generation in `src/rust/`.
 - `[typescript]`: the TypeScript code generation in `src/typescript/`.
