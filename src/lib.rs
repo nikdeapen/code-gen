@@ -8,6 +8,10 @@ mod common;
 mod expression;
 mod statement;
 
+#[cfg(feature = "java")]
+pub mod java;
+#[cfg(feature = "python")]
+pub mod python;
 #[cfg(feature = "rust")]
 pub mod rust;
 #[cfg(feature = "typescript")]
