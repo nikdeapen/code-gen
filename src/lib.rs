@@ -14,3 +14,5 @@ pub mod java;
 pub mod python;
 #[cfg(feature = "rust")]
 pub mod rust;
+#[cfg(feature = "typescript")]
+pub mod typescript;

@@ -37,6 +37,7 @@ cohesive. If there are many unrelated changes they should be in separate PRs.
 - `[java]`: the Java code generation in `src/java/`.
 - `[python]`: the Python code generation in `src/python/`.
 - `[rust]`: the Rust code generation in `src/rust/`.
+- `[typescript]`: the TypeScript code generation in `src/typescript/`.
 - `[*]`: a change that spans the core & a language, or several languages.
 
 ## Versions

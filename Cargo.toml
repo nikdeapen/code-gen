@@ -13,3 +13,4 @@ license = "MIT"
 java = []
 python = []
 rust = []
+typescript = []
