@@ -10,4 +10,5 @@ edition = "2024"
 license = "MIT"
 
 [features]
+python = []
 rust = []
