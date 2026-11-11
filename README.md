@@ -14,7 +14,8 @@ This crate has no dependencies.
 
 ### Features
 
-    rust    # support for the Rust programming language
+    rust          # support for the Rust programming language
+    typescript    # support for the TypeScript & JavaScript programming languages
 
 ## Example
 
