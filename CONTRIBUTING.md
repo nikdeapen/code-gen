@@ -8,8 +8,8 @@ The `master` branch is protected, so every change is made on a branch & merged w
 
 - Each pull request is one small, focused change.
 - Pull requests are squash merged, so the title becomes the commit message.
-- The build workflow must pass. It runs these checks without features & again with the `rust`
-  feature:
+- The build workflow must pass. It runs these checks without features & again with the feature of
+  each language, such as `rust`:
 
 ```sh
 cargo fmt --check
@@ -33,9 +33,10 @@ cohesive. If there are many unrelated changes they should be in separate PRs.
 
 - `[cargo]`: the project, typically anything focused outside of `src/`, like the manifest, the
   readme, the build workflow & version updates.
-- `[core]`: the language-neutral code in `src/`, outside of `src/rust/`.
+- `[core]`: the language-neutral code in `src/`, outside of the language folders.
+- `[kotlin]`: the Kotlin code generation in `src/kotlin/`.
 - `[rust]`: the Rust code generation in `src/rust/`.
-- `[*]`: a change that spans the core & the Rust code.
+- `[*]`: a change that spans the core & a language, or several languages.
 
 ## Versions
 

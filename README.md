@@ -14,7 +14,8 @@ This crate has no dependencies.
 
 ### Features
 
-    rust    # support for the Rust programming language
+    kotlin        # support for the Kotlin programming language
+    rust          # support for the Rust programming language
 
 ## Example
 

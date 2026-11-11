@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        features: [ "", "rust" ]
+        features: [ "", "kotlin", "rust" ]
     steps:
       - name: Git Checkout
         uses: actions/checkout@v4
