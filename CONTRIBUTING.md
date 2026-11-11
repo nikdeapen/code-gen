@@ -34,8 +34,15 @@ cohesive. If there are many unrelated changes they should be in separate PRs.
 - `[cargo]`: the project, typically anything focused outside of `src/`, like the manifest, the
   readme, the build workflow & version updates.
 - `[core]`: the language-neutral code in `src/`, outside of the language folders.
+- `[c]`: the C code generation in `src/c/`.
+- `[cpp]`: the C++ code generation in `src/cpp/`.
+- `[csharp]`: the C# code generation in `src/csharp/`.
 - `[go]`: the Go code generation in `src/go/`.
+- `[java]`: the Java code generation in `src/java/`.
+- `[kotlin]`: the Kotlin code generation in `src/kotlin/`.
+- `[python]`: the Python code generation in `src/python/`.
 - `[rust]`: the Rust code generation in `src/rust/`.
+- `[typescript]`: the TypeScript code generation in `src/typescript/`.
 - `[*]`: a change that spans the core & a language, or several languages.
 
 ## Versions

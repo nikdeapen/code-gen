@@ -10,5 +10,12 @@ edition = "2024"
 license = "MIT"
 
 [features]
+c = []
+cpp = []
+csharp = []
 go = []
+java = []
+kotlin = []
+python = []
 rust = []
+typescript = []
