@@ -8,6 +8,10 @@ mod common;
 mod expression;
 mod statement;
 
+#[cfg(feature = "c")]
+pub mod c;
+#[cfg(feature = "cpp")]
+pub mod cpp;
 #[cfg(feature = "java")]
 pub mod java;
 #[cfg(feature = "python")]
