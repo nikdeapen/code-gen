@@ -12,5 +12,11 @@ mod statement;
 pub mod c;
 #[cfg(feature = "cpp")]
 pub mod cpp;
+#[cfg(feature = "java")]
+pub mod java;
+#[cfg(feature = "python")]
+pub mod python;
 #[cfg(feature = "rust")]
 pub mod rust;
+#[cfg(feature = "typescript")]
+pub mod typescript;
