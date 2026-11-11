@@ -12,6 +12,7 @@ license = "MIT"
 [features]
 c = []
 cpp = []
+csharp = []
 java = []
 kotlin = []
 python = []
