@@ -14,7 +14,9 @@ This crate has no dependencies.
 
 ### Features
 
-    rust    # support for the Rust programming language
+    c             # support for the C programming language
+    cpp           # support for the C++ programming language
+    rust          # support for the Rust programming language
 
 ## Example
 
