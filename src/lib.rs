@@ -8,5 +8,7 @@ mod common;
 mod expression;
 mod statement;
 
+#[cfg(feature = "csharp")]
+pub mod csharp;
 #[cfg(feature = "rust")]
 pub mod rust;
