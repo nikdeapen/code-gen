@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        features: [ "", "python", "rust" ]
+        features: [ "", "java", "python", "rust" ]
     steps:
       - name: Git Checkout
         uses: actions/checkout@v4

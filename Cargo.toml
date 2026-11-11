@@ -10,5 +10,6 @@ edition = "2024"
 license = "MIT"
 
 [features]
+java = []
 python = []
 rust = []
