@@ -35,6 +35,7 @@ cohesive. If there are many unrelated changes they should be in separate PRs.
   readme, the build workflow & version updates.
 - `[core]`: the language-neutral code in `src/`, outside of the language folders.
 - `[java]`: the Java code generation in `src/java/`.
+- `[python]`: the Python code generation in `src/python/`.
 - `[rust]`: the Rust code generation in `src/rust/`.
 - `[*]`: a change that spans the core & a language, or several languages.
 

@@ -11,4 +11,5 @@ license = "MIT"
 
 [features]
 java = []
+python = []
 rust = []
