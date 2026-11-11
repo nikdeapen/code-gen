@@ -8,5 +8,7 @@ mod common;
 mod expression;
 mod statement;
 
+#[cfg(feature = "java")]
+pub mod java;
 #[cfg(feature = "rust")]
 pub mod rust;
