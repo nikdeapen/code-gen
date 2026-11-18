@@ -1,9 +1,10 @@
 use crate::{Block, CodeBuffer, Expression, Literal, Statement, WithStatements};
 
-/// An `if` statement with an optional `else` clause.
+/// An `if` statement with optional `else if` clauses & an optional `else` clause.
 pub struct IfStatement {
     condition: Box<dyn Expression>,
     success_statements: Block,
+    else_ifs: Vec<(Literal, Block)>,
     else_statements: Block,
 }
 
@@ -12,6 +13,7 @@ impl<E: 'static + Expression> From<E> for IfStatement {
         Self {
             condition: Box::new(expression),
             success_statements: Block::default(),
+            else_ifs: Vec::default(),
             else_statements: Block::default(),
         }
     }
@@ -58,6 +60,36 @@ impl IfStatement {
 }
 
 impl IfStatement {
+    //! Else If
+
+    /// Gets the `else if` clauses, each a condition & its statements.
+    #[must_use]
+    pub fn else_ifs(&self) -> &[(Literal, Block)] {
+        self.else_ifs.as_slice()
+    }
+
+    /// Adds an `else if` clause with the `condition` & the `statements`.
+    pub fn add_else_if<C, S>(&mut self, condition: C, statements: S)
+    where
+        C: Into<Literal>,
+        S: Into<Block>,
+    {
+        self.else_ifs.push((condition.into(), statements.into()));
+    }
+
+    /// Adds an `else if` clause with the `condition` & the `statements`.
+    #[must_use]
+    pub fn with_else_if<C, S>(mut self, condition: C, statements: S) -> Self
+    where
+        C: Into<Literal>,
+        S: Into<Block>,
+    {
+        self.add_else_if(condition, statements);
+        self
+    }
+}
+
+impl IfStatement {
     //! Else
 
     /// Gets the else statements.
@@ -93,6 +125,14 @@ impl Statement for IfStatement {
         b.write(" {");
         b.end_line();
         self.success_statements.write(b, level + 1);
+        for (condition, statements) in &self.else_ifs {
+            b.indent(level);
+            b.write("} else if ");
+            condition.write(b);
+            b.write(" {");
+            b.end_line();
+            statements.write(b, level + 1);
+        }
         if !self.else_statements.statements().is_empty() {
             b.indent(level);
             b.write("} else {");
@@ -122,6 +162,45 @@ mod tests {
         assert_eq!(
             s.to_code(),
             "if x > 0 {\n    yes();\n} else {\n    no();\n}\n"
+        );
+    }
+
+    #[test]
+    fn if_else_if() {
+        let s: IfStatement = IfStatement::from("x < y")
+            .with_success_statements(Block::default().with_literal("Ordering::Less"))
+            .with_else_if("x > y", Block::default().with_literal("Ordering::Greater"));
+        assert_eq!(
+            s.to_code(),
+            "if x < y {\n    Ordering::Less\n} else if x > y {\n    Ordering::Greater\n}\n"
+        );
+    }
+
+    #[test]
+    fn if_else_ifs_and_else() {
+        let s: IfStatement = IfStatement::from("x < y")
+            .with_success_statements(Block::default().with_literal("Ordering::Less"))
+            .with_else_if("x > y", Block::default().with_literal("Ordering::Greater"))
+            .with_else_if(String::from("let Some(order) = order"), Block::default())
+            .with_else_statements(Block::default().with_literal("Ordering::Equal"));
+        assert_eq!(s.else_ifs().len(), 2);
+        assert_eq!(
+            s.to_code(),
+            "if x < y {\n    Ordering::Less\n} else if x > y {\n    Ordering::Greater\n} else if let Some(order) = order {\n} else {\n    Ordering::Equal\n}\n"
+        );
+    }
+
+    #[test]
+    fn if_indented() {
+        let s: IfStatement = IfStatement::from(String::from("ok"))
+            .with_success_statements(Block::default().with_semi("count += 1"))
+            .with_else_if("done", Block::default().with_semi("count = 0"))
+            .with_else_statements(Block::default().with_semi("count -= 1"));
+        let mut b: CodeBuffer = CodeBuffer::default();
+        s.write(&mut b, 1);
+        assert_eq!(
+            b.peek(),
+            "    if ok {\n        count += 1;\n    } else if done {\n        count = 0;\n    } else {\n        count -= 1;\n    }\n"
         );
     }
 }
