@@ -142,8 +142,8 @@ impl Enum {
 impl Statement for Enum {
     fn write(&self, b: &mut CodeBuffer, level: usize) {
         self.write_comments(OuterLineDoc, b, level);
-        self.write_derives(b, level);
         self.write_attributes(b, level);
+        self.write_derives(b, level);
         b.indent(level);
         self.write_access(b);
         b.write("enum ");
@@ -199,6 +199,20 @@ mod tests {
             .with_attribute("repr(u8)")
             .with_case(EnumCase::from("Red"));
         assert_eq!(e.to_code(), "#[repr(u8)]\nenum Color {\n    Red,\n}\n");
+    }
+
+    #[test]
+    fn enum_with_attributes_and_derives() {
+        let e: Enum = Enum::from("Color")
+            .with_comment(" A color.")
+            .with_derive("Copy")
+            .with_derive("Clone")
+            .with_attribute("must_use")
+            .with_case(EnumCase::from("Red"));
+        assert_eq!(
+            e.to_code(),
+            "/// A color.\n#[must_use]\n#[derive(Copy, Clone)]\nenum Color {\n    Red,\n}\n"
+        );
     }
 
     #[test]
