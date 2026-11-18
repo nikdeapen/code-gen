@@ -1,11 +1,12 @@
 use crate::rust::{
     CommentType, ConstInit, Function, Generic, RustType, TypeDec, WithComments, WithFunctions,
-    WithGenerics, WithRustType, WithTypeDecs,
+    WithGenerics, WithRustType, WithTypeDecs, WithUnsafeFlag,
 };
 use crate::{CodeBuffer, EmptyLine, Expression, IsEmpty, Statement};
 
 /// An impl block.
 pub struct ImplBlock {
+    is_unsafe: bool,
     generics: Vec<Generic>,
     structure: RustType,
     for_trait: Option<RustType>,
@@ -18,6 +19,7 @@ pub struct ImplBlock {
 impl<T: Into<RustType>> From<T> for ImplBlock {
     fn from(base: T) -> Self {
         Self {
+            is_unsafe: false,
             generics: Vec::default(),
             structure: base.into(),
             for_trait: None,
@@ -26,6 +28,16 @@ impl<T: Into<RustType>> From<T> for ImplBlock {
             constants: Vec::default(),
             functions: Vec::default(),
         }
+    }
+}
+
+impl WithUnsafeFlag for ImplBlock {
+    fn is_unsafe(&self) -> bool {
+        self.is_unsafe
+    }
+
+    fn set_unsafe(&mut self, is_unsafe: bool) {
+        self.is_unsafe = is_unsafe;
     }
 }
 
@@ -157,6 +169,7 @@ impl IsEmpty for ImplBlock {
 impl Statement for ImplBlock {
     fn write(&self, b: &mut CodeBuffer, level: usize) {
         b.indent(level);
+        self.write_unsafe(b);
         b.write("impl");
         self.write_generic_brackets(b);
         b.space();
@@ -238,5 +251,29 @@ mod tests {
         let i = ImplBlock::from(RustType::from("Ref").with_generic(RustType::from("'a")))
             .with_generic("'a");
         assert_eq!(i.to_code(), "impl<'a> Ref<'a> {}\n");
+    }
+
+    #[test]
+    fn unsafe_impl() {
+        let i: ImplBlock = ImplBlock::from("Foo")
+            .with_for_trait("Send")
+            .with_unsafe(true);
+        assert_eq!(i.to_code(), "unsafe impl Send for Foo {}\n");
+    }
+
+    #[test]
+    fn unsafe_impl_indented() {
+        let i: ImplBlock = ImplBlock::from("Foo")
+            .with_for_trait("Enum")
+            .with_unsafe(true)
+            .with_function(
+                Function::from(Signature::from("tag_number").with_result("u16")).with_literal("1"),
+            );
+        let mut b: CodeBuffer = CodeBuffer::default();
+        i.write(&mut b, 1);
+        assert_eq!(
+            b.peek(),
+            "    unsafe impl Enum for Foo {\n\n        fn tag_number() -> u16 {\n            1\n        }\n    }\n"
+        );
     }
 }
