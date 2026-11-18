@@ -117,8 +117,8 @@ impl WithStructFields for Struct {
 impl Statement for Struct {
     fn write(&self, b: &mut CodeBuffer, level: usize) {
         self.write_comments(CommentType::OuterLineDoc, b, level);
-        self.write_derives(b, level);
         self.write_attributes(b, level);
+        self.write_derives(b, level);
         b.indent(level);
         self.write_access(b);
         b.write("struct ");
@@ -165,6 +165,19 @@ mod tests {
             .with_derive("Clone")
             .with_derive("Debug");
         assert_eq!(s.to_code(), "#[derive(Clone, Debug)]\nstruct Foo {}\n");
+    }
+
+    #[test]
+    fn struct_with_attributes_and_derives() {
+        let s: Struct = Struct::from("Foo")
+            .with_comment(" A foo.")
+            .with_derive("Clone")
+            .with_attribute("must_use")
+            .with_attribute("non_exhaustive");
+        assert_eq!(
+            s.to_code(),
+            "/// A foo.\n#[must_use]\n#[non_exhaustive]\n#[derive(Clone)]\nstruct Foo {}\n"
+        );
     }
 
     #[test]

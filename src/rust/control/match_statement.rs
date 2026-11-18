@@ -114,6 +114,22 @@ mod tests {
     }
 
     #[test]
+    fn match_with_expression_cases() {
+        let s: MatchStatement = MatchStatement::from("tag_number.get()")
+            .with_match_case(MatchCase::from("1").with_expression("Self::Red"))
+            .with_match_case(MatchCase::from("2").with_expression("Self::Green"))
+            .with_match_case(
+                MatchCase::from("_")
+                    .with_semi("log()")
+                    .with_literal("Self::Other"),
+            );
+        assert_eq!(
+            s.to_code(),
+            "match tag_number.get() {\n    1 => Self::Red,\n    2 => Self::Green,\n    _ => {\n        log();\n        Self::Other\n    }\n}\n"
+        );
+    }
+
+    #[test]
     fn match_with_assignment() {
         let s = MatchStatement::from("x")
             .with_assignment(Var::from(("result", "u32")))

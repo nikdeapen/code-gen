@@ -1,6 +1,12 @@
 use crate::CodeBuffer;
 
 /// An element with derive macros.
+///
+/// # Note
+/// - The derives are written below the attributes, so an attribute like `must_use` stays above
+///   them.
+/// - A helper attribute of a derive macro must be below its derive, or the code doesn't compile.
+///   (ex: `serde`) Add that derive as an attribute, right above the helper attribute.
 pub trait WithDerives: Sized {
     /// Gets the derives.
     fn derives(&self) -> &[String];
