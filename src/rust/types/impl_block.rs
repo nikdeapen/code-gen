@@ -135,11 +135,16 @@ impl ImplBlock {
         self
     }
 
-    /// Writes the constants.
+    /// Writes the constants, with a blank line between two of them & before the functions.
     pub fn write_constants(&self, b: &mut CodeBuffer, level: usize) {
-        for constant in self.constants() {
-            EmptyLine::default().write(b, level);
+        for (index, constant) in self.constants().iter().enumerate() {
+            if index > 0 {
+                EmptyLine::default().write(b, level);
+            }
             constant.write(b, level);
+        }
+        if !self.constants().is_empty() && !self.functions().is_empty() {
+            EmptyLine::default().write(b, level);
         }
     }
 }
@@ -197,10 +202,10 @@ impl Statement for ImplBlock {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::WithStatements;
     use crate::rust::{
         Access, Receiver, Signature, Var, WithAccess, WithReceiver, WithResult, WithVarParams,
     };
+    use crate::{Literal, WithStatements};
 
     #[test]
     fn empty_impl() {
@@ -219,6 +224,30 @@ mod tests {
             i.to_code(),
             "impl Foo {\n\n    pub fn new() -> Self {\n        Self {};\n    }\n}\n"
         );
+    }
+
+    #[test]
+    fn impl_with_constants() {
+        let i = ImplBlock::from(RustType::from("Foo"))
+            .with_constant(ConstInit::from((
+                Var::from(("A", "u8")),
+                Literal::from("1"),
+            )))
+            .with_constant(ConstInit::from((
+                Var::from(("B", "u8")),
+                Literal::from("2"),
+            )))
+            .with_function(Function::from(Signature::from("f")).with_semi("g()"));
+        assert_eq!(
+            i.to_code(),
+            "impl Foo {\n\n    const A: u8 = 1;\n\n    const B: u8 = 2;\n\n    fn f() {\n        g();\n    }\n}\n"
+        );
+
+        let i = ImplBlock::from(RustType::from("Foo")).with_constant(ConstInit::from((
+            Var::from(("A", "u8")),
+            Literal::from("1"),
+        )));
+        assert_eq!(i.to_code(), "impl Foo {\n\n    const A: u8 = 1;\n}\n");
     }
 
     #[test]
