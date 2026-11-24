@@ -200,6 +200,22 @@ mod tests {
     }
 
     #[test]
+    fn struct_with_field_comments() {
+        let s = Struct::from("Point")
+            .with_field(StructField::from(("x", "f64")).with_comment(" The x coordinate."))
+            .with_field(
+                StructField::from(("y", "f64"))
+                    .with_comment(" The y coordinate.")
+                    .with_attribute("serde(default)"),
+            )
+            .with_field(StructField::from(("z", "f64")));
+        assert_eq!(
+            s.to_code(),
+            "struct Point {\n    /// The x coordinate.\n    x: f64,\n\n    /// The y coordinate.\n    #[serde(default)]\n    y: f64,\n    z: f64,\n}\n"
+        );
+    }
+
+    #[test]
     fn struct_with_comment() {
         let s = Struct::from("Foo").with_comment("A foo.");
         assert_eq!(s.to_code(), "///A foo.\nstruct Foo {}\n");
