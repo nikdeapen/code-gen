@@ -1,5 +1,5 @@
-use crate::rust::StructField;
-use crate::{CodeBuffer, Statement};
+use crate::rust::{StructField, WithComments};
+use crate::{CodeBuffer, EmptyLine, Statement};
 
 /// An element with struct fields.
 pub trait WithStructFields: Sized {
@@ -22,8 +22,14 @@ pub trait WithStructFields: Sized {
     }
 
     /// Writes the struct fields.
+    ///
+    /// # Note
+    /// - A field with comments has a blank line above it, unless it is the first field.
     fn write_fields(&self, b: &mut CodeBuffer, level: usize) {
-        for field in self.fields() {
+        for (index, field) in self.fields().iter().enumerate() {
+            if index > 0 && !field.comments().is_empty() {
+                EmptyLine::default().write(b, level);
+            }
             field.write(b, level);
         }
     }

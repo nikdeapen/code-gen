@@ -1,9 +1,13 @@
-use crate::rust::{Access, RustType, Var, WithAccess, WithAttributes, WithRustType, WithVar};
+use crate::rust::{
+    Access, CommentType, RustType, Var, WithAccess, WithAttributes, WithComments, WithRustType,
+    WithVar,
+};
 use crate::{CodeBuffer, Statement, WithName};
 
 /// A field of a struct declaration.
 #[derive(Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug)]
 pub struct StructField {
+    comments: Vec<String>,
     attributes: Vec<String>,
     access: Access,
     var: Var,
@@ -12,10 +16,24 @@ pub struct StructField {
 impl<V: Into<Var>> From<V> for StructField {
     fn from(var: V) -> Self {
         Self {
+            comments: Vec::default(),
             attributes: vec![],
             access: Access::default(),
             var: var.into(),
         }
+    }
+}
+
+impl WithComments for StructField {
+    fn comments(&self) -> &[String] {
+        self.comments.as_slice()
+    }
+
+    fn add_comment<S>(&mut self, comment: S)
+    where
+        S: Into<String>,
+    {
+        self.comments.push(comment.into());
     }
 }
 
@@ -65,6 +83,7 @@ impl WithVar for StructField {
 
 impl Statement for StructField {
     fn write(&self, b: &mut CodeBuffer, level: usize) {
+        self.write_comments(CommentType::OuterLineDoc, b, level);
         self.write_attributes(b, level);
         b.indent(level);
         self.write_access(b);
