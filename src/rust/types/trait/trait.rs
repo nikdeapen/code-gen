@@ -179,7 +179,9 @@ impl Statement for Trait {
 mod tests {
     use super::*;
     use crate::WithStatements;
-    use crate::rust::{Receiver, RustType, Signature, WithReceiver, WithResult};
+    use crate::rust::{
+        Receiver, RustType, Signature, WithAttributes, WithComments, WithReceiver, WithResult,
+    };
 
     #[test]
     fn empty_trait() {
@@ -214,6 +216,19 @@ mod tests {
         assert_eq!(
             t.to_code(),
             "pub trait Greet {\n\n    fn greet(&self) -> String;\n}\n"
+        );
+    }
+
+    #[test]
+    fn trait_with_signature_dec_attribute() {
+        let t = Trait::from("Greet").with_signature_dec(
+            SignatureDec::from(Signature::from("greet").with_receiver(Receiver::Borrowed))
+                .with_comment(" Greets.")
+                .with_attribute("deprecated"),
+        );
+        assert_eq!(
+            t.to_code(),
+            "trait Greet {\n\n    /// Greets.\n    #[deprecated]\n    fn greet(&self);\n}\n"
         );
     }
 
